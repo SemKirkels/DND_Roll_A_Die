@@ -2,7 +2,7 @@
 
 int main(void)
 {
-    ClientSemKirkels::RunService newService;
+    ClientSemKirkels::RunClient newService;
 
     newService.runService();
 

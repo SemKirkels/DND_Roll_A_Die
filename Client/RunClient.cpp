@@ -1,11 +1,11 @@
 #include "RunClient.h"
 
-ClientSemKirkels::RunService::RunService() : context(1), push(context, ZMQ_PUSH), subscriber(context, ZMQ_SUB)
+ClientSemKirkels::RunClient::RunClient() : context(1), push(context, ZMQ_PUSH), subscriber(context, ZMQ_SUB)
 {
     std::cout << "Starting Client" << std::endl;
 }
 
-void ClientSemKirkels::RunService::setupSockets()
+void ClientSemKirkels::RunClient::setupSockets()
 {
     // Connect sockets
     //push.connect("tcp://localhost:24041");
@@ -17,7 +17,7 @@ void ClientSemKirkels::RunService::setupSockets()
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
 }
 
-void ClientSemKirkels::RunService::menu()
+void ClientSemKirkels::RunClient::menu()
 {
     int input = 0;
     QString requestMSG;
@@ -80,7 +80,7 @@ void ClientSemKirkels::RunService::menu()
     std::cout << std::endl;
 }
 
-void ClientSemKirkels::RunService::runService()
+void ClientSemKirkels::RunClient::runService()
 {
     try
     {
@@ -112,7 +112,7 @@ void ClientSemKirkels::RunService::runService()
     }
 }
 
-ClientSemKirkels::RunService::~RunService()
+ClientSemKirkels::RunClient::~RunClient()
 {
     std::cout << std::endl;
     std::cout << "Shutting down client!" << std::endl;

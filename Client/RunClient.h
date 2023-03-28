@@ -20,12 +20,12 @@
 
 namespace ClientSemKirkels
 {
-    class RunService
+    class RunClient
     {
         public:
-            RunService();
+            RunClient();
             void runService();
-            ~RunService();
+            ~RunClient();
 
         protected:
             void setupSockets(void);
