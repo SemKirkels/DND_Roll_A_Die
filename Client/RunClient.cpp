@@ -33,13 +33,18 @@ void ClientSemKirkels::RunClient::menu()
        std::cout << "3. D8" << std::endl;
        std::cout << "4. D10" << std::endl;
        std::cout << "5. D12" << std::endl;
+       std::cout << "6. Exit" << std::endl;
        std::cout << "Select a dice: ";
        std::cin >> input;
 
-       if(input < 1 || input > 5)
+       if(input < 1 || input > 6)
        {
            std::cout << "Invalid Input!" << std::endl << std::endl;
            // Do noting
+       }
+       else if(input == 6)
+       {
+           exit(1);
        }
        else
        {
@@ -87,24 +92,27 @@ void ClientSemKirkels::RunClient::runService()
         // Declare Variables
         zmq::message_t *msg = new zmq::message_t();
 
-        // Setup socket
-        setupSockets();
+        while(push.connected())
+        {
+            // Setup socket
+            setupSockets();
 
-        // Enter menu and send message
-        menu();
+            // Enter menu and send message
+            menu();
 
-        // Receive message
-        subscriber.recv(msg);
+            // Receive message
+            subscriber.recv(msg);
 
-        // Print message (Debug)
-        std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
+            // Print message (Debug)
+            std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
 
-        // Convert message type
-        QString fullMessage((char *) msg->data()); // Convert ZMQ message to QString
-        QString result = fullMessage.split('>').at(2);
+            // Convert message type
+            QString fullMessage((char *) msg->data()); // Convert ZMQ message to QString
+            QString result = fullMessage.split('>').at(2);
 
-        // Print message
-        std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
+            // Print message
+            std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
+        }
     }
     catch(zmq::error_t &ex)
     {

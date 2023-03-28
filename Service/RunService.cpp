@@ -84,11 +84,14 @@ void ServiceSemKirkels::RunService::runService()
 
     try
     {
-        // Setup sockets
-        setupSockets();
+        while(subscriber.connected())
+        {
+            // Setup sockets
+            setupSockets();
 
-        // Handle incomming messages
-        handleMessage();
+            // Handle incomming messages
+            handleMessage();
+        }
     }
     catch(zmq::error_t &ex)
     {
