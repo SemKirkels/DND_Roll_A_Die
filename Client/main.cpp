@@ -1,8 +1,8 @@
-#include "runservice.h"
+#include "RunClient.h"
 
 int main(void)
 {
-    ServiceSemKirkels::RunService newService;
+    ClientSemKirkels::RunService newService;
 
     newService.runService();
 

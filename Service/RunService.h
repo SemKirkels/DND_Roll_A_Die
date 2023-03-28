@@ -6,6 +6,8 @@
 #include <QString>
 #include <QStringList>
 
+#include "dice.h"
+
 #ifndef _WIN32
     #include <unistd.h>
 #else
@@ -14,8 +16,8 @@
 #endif
 
 /*
- * Service>RPS?> -> Client to Service
- * Service>RPS!> -> Service to Client
+ * Service>DICE?> -> Client to Service
+ * Service>DICE!> -> Service to Client
  */
 
 namespace ServiceSemKirkels
@@ -26,6 +28,15 @@ namespace ServiceSemKirkels
             RunService();
             void runService();
             ~RunService();
+
+        protected:
+            void setupSockets(void);
+            void handleMessage();
+
+        private:
+            zmq::context_t context;
+            zmq::socket_t push;
+            zmq::socket_t subscriber;
     };
 }
 

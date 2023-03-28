@@ -8,7 +8,7 @@ LIBS += -L$$PWD/../lib -lzmq
 INCLUDEPATH += $$PWD/../include
 
 SOURCES += main.cpp \
-    runservice.cpp
+    RunClient.cpp
 
 HEADERS += \
-    runservice.h
+    RunClient.h

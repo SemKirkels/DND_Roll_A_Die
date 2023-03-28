@@ -8,7 +8,9 @@ LIBS += -L$$PWD/../lib -lzmq
 INCLUDEPATH += $$PWD/../include
 
 SOURCES += main.cpp \
-    runservice.cpp
+    RunService.cpp \
+    dice.cpp
 
 HEADERS += \
-    runservice.h
+    RunService.h \
+    dice.h
