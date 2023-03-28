@@ -14,14 +14,16 @@ void ServiceSemKirkels::RunService::setupSockets()
     //subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
 
     // Set Socket options
-    subscriber.setsockopt(ZMQ_SUBSCRIBE, "Service>DICE?>", strlen("Service>DICE?>"));
+    subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
 }
 
 void ServiceSemKirkels::RunService::handleMessage()
 {
     // Declare Variables
-    zmq::message_t *msg = new zmq::message_t();
+    QString rollResult;
+    QString concatMessage;
     Dice newDice;
+    zmq::message_t *msg = new zmq::message_t();
 
     // Send / Receive phase
     subscriber.recv(msg);
@@ -34,48 +36,51 @@ void ServiceSemKirkels::RunService::handleMessage()
     if(rollRequest == "D4")
     {
         std::cout << "Received request for D4" << std::endl;
-        // Call rollD4
-        newDice.rollD4();
+        rollResult.setNum(newDice.rollD4());
     }
     else if(rollRequest == "D6")
     {
         std::cout << "Received request for D6" << std::endl;
-        // Call rollD6
-        newDice.rollD6();
+        rollResult.setNum(newDice.rollD6());
     }
     else if(rollRequest == "D8")
     {
         std::cout << "Received request for D8" << std::endl;
-        // Call rollD8
-        newDice.rollD8();
+        rollResult.setNum(newDice.rollD8());
     }
     else if(rollRequest == "D10")
     {
         std::cout << "Received request for D10" << std::endl;
-        // Call rollD10
-        newDice.rollD10();
+        rollResult.setNum(newDice.rollD10());
     }
     else if(rollRequest == "D12")
     {
         std::cout << "Received request for D12" << std::endl;
-        // Call rollD12
-        newDice.rollD12();
+        rollResult.setNum(newDice.rollD12());
     }
     else
     {
         std::cout << rollRequest.toStdString() << " is an invalid Request" << std::endl;
     }
+
+    std::cout << "Rolled a: " << rollResult.toStdString().c_str() << std::endl;
+
+    concatMessage.append(pushTopic);
+    concatMessage.append(rollResult);
+    concatMessage.append(">");
+
+    push.send(concatMessage.toStdString().c_str(), concatMessage.length());
 }
 
 void ServiceSemKirkels::RunService::runService()
 {
+    srand(time(NULL));
+
     try
     {
         setupSockets();
 
         handleMessage();
-
-        push.send("Service>DICE!>Result", strlen("Service>DICE!>Result"));
     }
     catch(zmq::error_t &ex)
     {

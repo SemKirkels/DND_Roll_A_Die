@@ -34,6 +34,8 @@ namespace ServiceSemKirkels
             void handleMessage();
 
         private:
+            QString subTopic    = "Service>DICE?>";
+            QString pushTopic   = "Service>DICE!>";
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;
