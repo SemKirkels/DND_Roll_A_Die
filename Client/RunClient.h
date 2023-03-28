@@ -32,6 +32,8 @@ namespace ClientSemKirkels
             void menu(void);
 
         private:
+            QString subTopic    = "Service>DICE!>"; // Client receives answer
+            QString pushTopic   = "Service>DICE?>"; // Client asks question
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;

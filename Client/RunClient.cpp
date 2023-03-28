@@ -8,19 +8,23 @@ ClientSemKirkels::RunService::RunService() : context(1), push(context, ZMQ_PUSH)
 void ClientSemKirkels::RunService::setupSockets()
 {
     // Connect sockets
-    push.connect("tcp://localhost:24041");
-    subscriber.connect("tcp://localhost:24042");
-    //push.connect("tcp://benternet.pxl-ea-ict.be:24041");
-    //subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
+    //push.connect("tcp://localhost:24041");
+    //subscriber.connect("tcp://localhost:24042");
+    push.connect("tcp://benternet.pxl-ea-ict.be:24041");
+    subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
 
     // Set Socket options
-    subscriber.setsockopt(ZMQ_SUBSCRIBE, "Service>DICE!>", strlen("Service>DICE!>"));
+    subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
 }
 
 void ClientSemKirkels::RunService::menu()
 {
     int input = 0;
+    QString requestMSG;
 
+    requestMSG.append(pushTopic);
+
+    // Menu to select dice
     while(1)
     {
        std::cout << "Roll A Dice" << std::endl;
@@ -34,7 +38,7 @@ void ClientSemKirkels::RunService::menu()
 
        if(input < 1 || input > 5)
        {
-           std::cout << "Invalid Input!" << std::endl;
+           std::cout << "Invalid Input!" << std::endl << std::endl;
            // Do noting
        }
        else
@@ -43,31 +47,37 @@ void ClientSemKirkels::RunService::menu()
        }
     }
 
+    // Switch case to concat requestMSG
     switch(input)
     {
         case 1:
-            push.send("Service>DICE?>D4>", strlen("Service>DICE?>D4>"));
-            std::cout << "Rolled a D4" << std::endl;
+            requestMSG.append("D4>");
+            std::cout << "Requested a D4" << std::endl;
             break;
         case 2:
-            push.send("Service>DICE?>D6>", strlen("Service>DICE?>D6>"));
-            std::cout << "Rolled a D6" << std::endl;
+            requestMSG.append("D6>");
+            std::cout << "Requested a D6" << std::endl;
             break;
         case 3:
-            push.send("Service>DICE?>D8>", strlen("Service>DICE?>D8>"));
-            std::cout << "Rolled a D8" << std::endl;
+            requestMSG.append("D8>");
+            std::cout << "Requested a D8" << std::endl;
             break;
         case 4:
-            push.send("Service>DICE?>D10>", strlen("Service>DICE?>D10>"));
-            std::cout << "Rolled a D10" << std::endl;
+            requestMSG.append("D10>");
+            std::cout << "Requested a D10" << std::endl;
             break;
         case 5:
-            push.send("Service>DICE?>D10>", strlen("Service>DICE?>D10>"));
-            std::cout << "Rolled a D10" << std::endl;
+            requestMSG.append("D12>");
+            std::cout << "Requested a D12" << std::endl;
             break;
         default:
             break;
     }
+
+    // Send request to service
+
+    push.send(requestMSG.toStdString().c_str(), requestMSG.length());
+    std::cout << std::endl;
 }
 
 void ClientSemKirkels::RunService::runService()
@@ -77,12 +87,24 @@ void ClientSemKirkels::RunService::runService()
         // Declare Variables
         zmq::message_t *msg = new zmq::message_t();
 
+        // Setup socket
         setupSockets();
 
+        // Enter menu and send message
         menu();
 
+        // Receive message
         subscriber.recv(msg);
-        std::cout << "Received: " << std::string((char*) msg->data(), msg->size()) << std::endl;
+
+        // Print message (Debug)
+        std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
+
+        // Convert message type
+        QString fullMessage((char *) msg->data()); // Convert ZMQ message to QString
+        QString result = fullMessage.split('>').at(2);
+
+        // Print message
+        std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
     }
     catch(zmq::error_t &ex)
     {
