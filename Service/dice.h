@@ -14,7 +14,9 @@ class Dice
         int rollD8();
         int rollD10();
         int rollD12();
+        int rollD20();
         ~Dice();
+
     protected:
         int dice = 0;
 };

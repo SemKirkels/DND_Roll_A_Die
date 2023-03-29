@@ -33,11 +33,12 @@ void ClientSemKirkels::RunClient::menu()
        std::cout << "3. D8" << std::endl;
        std::cout << "4. D10" << std::endl;
        std::cout << "5. D12" << std::endl;
-       std::cout << "6. Exit" << std::endl;
+       std::cout << "6. D20" << std::endl;
+       std::cout << "7. Exit" << std::endl;
        std::cout << "Select a dice: ";
        std::cin >> input;
 
-       if(input < 1 || input > 6)
+       if(input < 1 || input > 7)
        {
            std::cout << "Invalid Input!" << std::endl << std::endl;
            // Do noting
@@ -74,6 +75,10 @@ void ClientSemKirkels::RunClient::menu()
         case 5:
             requestMSG.append("D12>");
             std::cout << "Requested a D12" << std::endl;
+            break;
+        case 6:
+            requestMSG.append("D20>");
+            std::cout << "Requested a D20" << std::endl;
             break;
         default:
             break;

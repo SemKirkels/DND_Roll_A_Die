@@ -61,6 +61,11 @@ void ServiceSemKirkels::RunService::handleMessage()
         std::cout << "Received request for D12" << std::endl;
         rollResult.setNum(newDice.rollD12());
     }
+    else if(rollRequest == "D20")
+    {
+        std::cout << "Received request for D20" << std::endl;
+        rollResult.setNum(newDice.rollD20());
+    }
     else
     {
         std::cout << rollRequest.toStdString() << " is an invalid Request" << std::endl;

@@ -40,6 +40,13 @@ int Dice::rollD12()
     return dice;
 }
 
+int Dice::rollD20()
+{
+    dice = (rand() % 20) + 1;
+
+    return dice;
+}
+
 Dice::~Dice()
 {
 
