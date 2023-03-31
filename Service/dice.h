@@ -16,9 +16,11 @@ class Dice
         int rollD12();
         int rollD20();
         ~Dice();
-
+    
     protected:
         int dice = 0;
+    
+    private:
 };
 
 #endif // DICE_H
