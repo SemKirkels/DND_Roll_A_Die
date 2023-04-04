@@ -3,18 +3,18 @@
 
 #include <ctime>
 #include <cstdlib>
-
+#include <iostream>
 
 class Dice
 {
     public:
         Dice();
-        int rollD4();
-        int rollD6();
-        int rollD8();
-        int rollD10();
-        int rollD12();
-        int rollD20();
+        int rollD4(int modifier);
+        int rollD6(int modifier);
+        int rollD8(int modifier);
+        int rollD10(int modifier);
+        int rollD12(int modifier);
+        int rollD20(int modifier);
         ~Dice();
     
     protected:

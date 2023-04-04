@@ -20,6 +20,8 @@ void ClientSemKirkels::RunClient::setupSockets()
 void ClientSemKirkels::RunClient::menu()
 {
     int input = 0;
+    int modifier_int = 0;
+    QString modifier_str;
     QString requestMSG;
 
     requestMSG.append(pushTopic);
@@ -43,7 +45,7 @@ void ClientSemKirkels::RunClient::menu()
            std::cout << "Invalid Input!" << std::endl << std::endl;
            // Do noting
        }
-       else if(input == 6)
+       else if(input == 7)
        {
            exit(1);
        }
@@ -51,6 +53,22 @@ void ClientSemKirkels::RunClient::menu()
        {
            break;
        }
+    }
+
+    while(1)
+    {
+        std::cout << "Enter your modifier: ";
+        std::cin >> modifier_int;
+
+        if(modifier_int >= 0 && modifier_int <= 100)
+        {
+            break;
+        }
+        else
+        {
+            modifier_int = 0;
+            std::cout << "Invalid input!" << std::endl;
+        }
     }
 
     // Switch case to concat requestMSG
@@ -84,8 +102,10 @@ void ClientSemKirkels::RunClient::menu()
             break;
     }
 
-    // Send request to service
+    requestMSG.append(modifier_str.setNum(modifier_int));
+    requestMSG.append(">");
 
+    // Send request to service
     push.send(requestMSG.toStdString().c_str(), requestMSG.length());
     std::cout << std::endl;
 }

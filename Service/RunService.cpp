@@ -24,47 +24,54 @@ void ServiceSemKirkels::RunService::handleMessage()
     QString concatMSG;
     Dice newDice;
     zmq::message_t *msg = new zmq::message_t();
+    int modifier_int = 0;
 
     // Send / Receive phase
     subscriber.recv(msg);
 
     // Print message (Debug)
-    std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
+    std::cout << "[Debug] Received: " << std::string((char*) msg->data(), msg->size()) << std::endl;
 
     // put msg in new QString
     QString fullMSG((char *) msg->data());
     QString rollRequest = fullMSG.split('>').at(2);
+    QString modifier_str = fullMSG.split('>').at(3);
+
+    modifier_int = modifier_str.toInt();
+
+    // Print modifier (Debug)
+    std::cout << "[Debug] Modifier: " << modifier_str.toStdString().c_str() << std::endl;
 
     // Call different function for each dice
     if(rollRequest == "D4")
     {
         std::cout << "Received request for D4" << std::endl;
-        rollResult.setNum(newDice.rollD4());
+        rollResult.setNum(newDice.rollD4(modifier_int));
     }
     else if(rollRequest == "D6")
     {
         std::cout << "Received request for D6" << std::endl;
-        rollResult.setNum(newDice.rollD6());
+        rollResult.setNum(newDice.rollD6(modifier_int));
     }
     else if(rollRequest == "D8")
     {
         std::cout << "Received request for D8" << std::endl;
-        rollResult.setNum(newDice.rollD8());
+        rollResult.setNum(newDice.rollD8(modifier_int));
     }
     else if(rollRequest == "D10")
     {
         std::cout << "Received request for D10" << std::endl;
-        rollResult.setNum(newDice.rollD10());
+        rollResult.setNum(newDice.rollD10(modifier_int));
     }
     else if(rollRequest == "D12")
     {
         std::cout << "Received request for D12" << std::endl;
-        rollResult.setNum(newDice.rollD12());
+        rollResult.setNum(newDice.rollD12(modifier_int));
     }
     else if(rollRequest == "D20")
     {
         std::cout << "Received request for D20" << std::endl;
-        rollResult.setNum(newDice.rollD20());
+        rollResult.setNum(newDice.rollD20(modifier_int));
     }
     else
     {
