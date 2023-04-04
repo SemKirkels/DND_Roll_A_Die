@@ -60,7 +60,7 @@ void ClientSemKirkels::RunClient::menu()
         std::cout << "Enter your modifier: ";
         std::cin >> modifier_int;
 
-        if(modifier_int >= 0 && modifier_int <= 100)
+        if(modifier_int >= -100 && modifier_int <= 100)
         {
             break;
         }
