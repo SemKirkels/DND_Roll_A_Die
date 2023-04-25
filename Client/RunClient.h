@@ -29,7 +29,8 @@ namespace ClientSemKirkels
 
         protected:
             void setupSockets(void);
-            void menu(void);
+            void selectDice(void);
+            void selectModifier(void);
 
         private:
             QString subTopic    = "Service>DICE!>"; // Client receives answer
@@ -37,6 +38,7 @@ namespace ClientSemKirkels
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;
+            QString requestMSG;
     };
 }
 #endif // RUNCLIENT_H

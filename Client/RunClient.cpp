@@ -17,12 +17,9 @@ void ClientSemKirkels::RunClient::setupSockets()
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
 }
 
-void ClientSemKirkels::RunClient::menu()
+void ClientSemKirkels::RunClient::selectDice()
 {
     int input = 0;
-    int modifier_int = 0;
-    QString modifier_str;
-    QString requestMSG;
 
     requestMSG.append(pushTopic);
 
@@ -55,22 +52,6 @@ void ClientSemKirkels::RunClient::menu()
        }
     }
 
-    while(1)
-    {
-        std::cout << "Enter your modifier: ";
-        std::cin >> modifier_int;
-
-        if(modifier_int >= -100 && modifier_int <= 100)
-        {
-            break;
-        }
-        else
-        {
-            modifier_int = 0;
-            std::cout << "Invalid input!" << std::endl;
-        }
-    }
-
     // Switch case to concat requestMSG
     switch(input)
     {
@@ -101,13 +82,31 @@ void ClientSemKirkels::RunClient::menu()
         default:
             break;
     }
+}
+
+void ClientSemKirkels::RunClient::selectModifier()
+{
+    int modifier_int = 0;
+    QString modifier_str;
+
+    while(1)
+    {
+        std::cout << "Enter your modifier: ";
+        std::cin >> modifier_int;
+
+        if(modifier_int >= -100 && modifier_int <= 100)
+        {
+            break;
+        }
+        else
+        {
+            modifier_int = 0;
+            std::cout << "Invalid input!" << std::endl;
+        }
+    }
 
     requestMSG.append(modifier_str.setNum(modifier_int));
     requestMSG.append(">");
-
-    // Send request to service
-    push.send(requestMSG.toStdString().c_str(), requestMSG.length());
-    std::cout << std::endl;
 }
 
 void ClientSemKirkels::RunClient::runService()
@@ -122,8 +121,15 @@ void ClientSemKirkels::RunClient::runService()
             // Setup socket
             setupSockets();
 
-            // Enter menu and send message
-            menu();
+            // Select Dice
+            selectDice();
+
+            // Select Modifier
+            selectModifier();
+
+            // Send request to service
+            push.send(requestMSG.toStdString().c_str(), requestMSG.length());
+            std::cout << std::endl;
 
             // Receive message
             subscriber.recv(msg);
