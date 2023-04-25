@@ -18,9 +18,11 @@ A simplified version is shown in the image below.
 
 ## Topics
 Topics are provided to ensure that other clients and services in the network are not disturbed by this service. These topics ensure that only packets to and from the service are responded to. A topic for this programme consists of:
-[Insert Send Topic]
+``` Service>Dice?>Data ```  
+The questionmark indicates the request from client to service.
 To send something from the client to the service. The service will reply with:
-[Insert Receive topic].
+``` Service>Dice!>Data ```  
+The exclamation mark indicates the service's response to the client.
 
 ## Packages
 A complete package consists of the topic followed by the data. Below is an example of a roll request followed by the service's reply.
