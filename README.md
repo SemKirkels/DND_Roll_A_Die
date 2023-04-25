@@ -38,4 +38,4 @@ Below is an example of a standard communication between client and service. The 
 A buildmanual can be found [here.][Link_BuildManual]
 
 [Link_PackageList]: https://github.com/SemKirkels/NetworkProgramming_Project/blob/main/Doc/PackageList.md
-[Link_BuildManual]:
+[Link_BuildManual]: https://github.com/SemKirkels/NetworkProgramming_Project/blob/main/Doc/BuildManual.md
