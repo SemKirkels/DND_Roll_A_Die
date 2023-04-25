@@ -17,10 +17,10 @@ A simplified version is shown in the image below.
 ![Network Diagram](./Doc/Pictures/Network_Diagram.png)  
 
 ## Topics
-Topics are provided to ensure that other clients and services in the network are not disturbed by this service. These topics ensure that only packets to and from the service are responded to. A topic for this programme consists of:
+Topics are provided to ensure that other clients and services in the network are not disturbed by this service. These topics ensure that only packets to and from the service are responded to. A topic for this programme consists of:  
 ``` Service>Dice?>Data ```  
 The questionmark indicates the request from client to service.
-To send something from the client to the service. The service will reply with:
+To send something from the client to the service. The service will reply with:  
 ``` Service>Dice!>Data ```  
 The exclamation mark indicates the service's response to the client.
 
