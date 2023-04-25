@@ -14,7 +14,7 @@ So, as explained above, the client will send a message to the broker. The broker
 
 A simplified version is shown in the image below.
 
-[Insert image]
+![Network Diagram](./Doc/Pictures/Network_Diagram.png)  
 
 ## Topics
 Topics are provided to ensure that other clients and services in the network are not disturbed by this service. These topics ensure that only packets to and from the service are responded to. A topic for this programme consists of:
