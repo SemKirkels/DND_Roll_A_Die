@@ -24,10 +24,10 @@ To send something from the client to the service. The service will reply with:
 
 ## Packages
 A complete package consists of the topic followed by the data. Below is an example of a roll request followed by the service's reply.
-The complete list of packages can be found here.
-[Clickable]
+The complete list of packages can be found [here.][Link_PackageList]
 
 ## Example communication
 Below is an example of a standard communication between client and service. The broker has been left out of this example to make it simpler. After all, the broker is nothing more than a pass-through
-[Insert image]
+![Example Communication](./Doc/Pictures/Example_Communication.png)  
 
+[Link_PackageList]: https://github.com/SemKirkels/NetworkProgramming_Project/blob/main/Doc/PackageList.md
