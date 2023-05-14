@@ -2,7 +2,7 @@
 This project provides a service for DND rolls via zero message queue (ZMQ).  
 
 # How does it work?
-The client will ask the user to create a character (if not already registered). The user will now be able to enter his modifiers. The modifiers are sent to the broker, which will forward them over the network to all devices. The service recognises a message from the client and will store the user and the modifiers. The client can now select a die. The service will then roll it and set off the modifier. The result will be sent back to the client. The client programme will display the result.
+The client will ask the user to create a character (if not already registered). The user will now be able to enter his modifiers. The modifiers are sent to the broker, which will forward them over the network to all devices. The service recognises a message from the client and will store the user and the modifiers. The client can now select a die. The service will then roll it and set off the modifier. The result will be sent back to the client. The client program will display the result.
 
 ## Client
 The client program will ask the user to choose a player name and enter the modifiers. This name and modifiers will be forwarded to the service. Once the service has registered the player, the client will receive a message that it was successful. The client can now send roll requests and wait for a result from the service.
