@@ -8,10 +8,10 @@ ClientSemKirkels::RunClient::RunClient() : context(1), push(context, ZMQ_PUSH), 
 void ClientSemKirkels::RunClient::setupSockets()
 {
     // Connect sockets
-    push.connect("tcp://localhost:24041");
-    subscriber.connect("tcp://localhost:24042");
-    //push.connect("tcp://benternet.pxl-ea-ict.be:24041");
-    //subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
+    //push.connect("tcp://localhost:24041");
+    //subscriber.connect("tcp://localhost:24042");
+    push.connect("tcp://benternet.pxl-ea-ict.be:24041");
+    subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
 
     // Set Socket options
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
