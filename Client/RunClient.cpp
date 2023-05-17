@@ -15,13 +15,13 @@ void ClientSemKirkels::RunClient::setupSockets()
 
     // Set Socket options
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
+
+    requestMSG.append(pushTopic);
 }
 
 void ClientSemKirkels::RunClient::selectDice()
 {
     int input = 0;
-
-    requestMSG.append(pushTopic);
 
     // Menu to select dice
     while(1)
@@ -82,6 +82,29 @@ void ClientSemKirkels::RunClient::selectDice()
         default:
             break;
     }
+
+    // Send request to service
+    push.send(requestMSG.toStdString().c_str(), requestMSG.length());
+    std::cout << std::endl;
+
+    // Receive message
+    subscriber.recv(msg);
+
+    // Print message (Debug)
+    std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
+
+    // Convert message type
+    QString fullMessage((char *) msg->data()); // Convert ZMQ message to QString
+    QString result = fullMessage.split('>').at(2);
+
+    // Print message
+    std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
+}
+
+void ClientSemKirkels::RunClient::createPlayer()
+{
+    // Select Modifier
+    selectModifier();
 }
 
 void ClientSemKirkels::RunClient::selectModifier()
@@ -114,35 +137,44 @@ void ClientSemKirkels::RunClient::runService()
     try
     {
         // Declare Variables
-        zmq::message_t *msg = new zmq::message_t();
+        int input = 0;
 
         while(push.connected())
         {
             // Setup socket
             setupSockets();
 
-            // Select Dice
-            selectDice();
+            while(1)
+            {
+                std::cout << "1. Create a player" << std::endl;
+                std::cout << "2. Roll a dice" << std::endl;
+                std::cin >> input;
 
-            // Select Modifier
-            selectModifier();
+                if(input == 1)
+                {
+                    // Create player
+                    createPlayer();
+                }
+                else if(input == 2)
+                {
+                    requestMSG.append("Roll>");
 
-            // Send request to service
-            push.send(requestMSG.toStdString().c_str(), requestMSG.length());
-            std::cout << std::endl;
+                    if(playerName == "")
+                    {
+                        //std::cin >> playerName.;
+                        requestMSG.append(playerName);
+                        requestMSG.append(">");
+                    }
 
-            // Receive message
-            subscriber.recv(msg);
+                    // Select Dice
+                    selectModifier();
+                    selectDice();
+                }
+                else
+                {
 
-            // Print message (Debug)
-            std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
-
-            // Convert message type
-            QString fullMessage((char *) msg->data()); // Convert ZMQ message to QString
-            QString result = fullMessage.split('>').at(2);
-
-            // Print message
-            std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
+                }
+            }
         }
     }
     catch(zmq::error_t &ex)

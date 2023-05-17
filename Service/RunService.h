@@ -26,19 +26,23 @@ namespace ServiceSemKirkels
     {
         public:
             RunService();
-            void runService();
+            void runService(void);
             ~RunService();
 
         protected:
             void setupSockets(void);
-            void handleMessage();
+            void handleMessage(void);
+            void handleRollRequest(void);
+            void handleCreatePlayer(void);
 
         private:
             QString subTopic    = "Service>DICE?>";
             QString pushTopic   = "Service>DICE!>";
+            QString playerName  = "";
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;
+            zmq::message_t *msg = new zmq::message_t();
     };
 }
 

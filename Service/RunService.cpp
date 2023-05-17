@@ -5,6 +5,27 @@ ServiceSemKirkels::RunService::RunService() : context(1), push(context, ZMQ_PUSH
     std::cout << "Starting Service" << std::endl << std::endl;
 }
 
+void ServiceSemKirkels::RunService::runService()
+{
+    srand(time(NULL));
+
+    try
+    {
+        while(subscriber.connected())
+        {
+            // Setup sockets
+            setupSockets();
+
+            // Handle incomming messages
+            handleMessage();
+        }
+    }
+    catch(zmq::error_t &ex)
+    {
+        std::cerr << "Caught an exception : " << ex.what();
+    }
+}
+
 void ServiceSemKirkels::RunService::setupSockets()
 {
     // Connect sockets
@@ -19,25 +40,42 @@ void ServiceSemKirkels::RunService::setupSockets()
 
 void ServiceSemKirkels::RunService::handleMessage()
 {
-    // Declare Variables
-    QString rollResult;
-    QString concatMSG;
-    Dice newDice;
-    zmq::message_t *msg = new zmq::message_t();
-    int modifier_int = 0;
-
     // Send / Receive phase
     subscriber.recv(msg);
 
     // Print message (Debug)
     std::cout << "[Debug] Received: " << std::string((char*) msg->data(), msg->size()) << std::endl;
 
+    QString fullMSG((char *) msg->data());
+
+    if(fullMSG.split('>').at(2) == "Roll")
+    {
+        handleRollRequest();
+    }
+    else if(fullMSG.split('>').at(2) == "RegisterPlayer")
+    {
+        handleCreatePlayer();
+    }
+    else
+    {
+        std::cout << "[Debug] Invalid Request!" << std::endl;
+    }
+}
+
+void ServiceSemKirkels::RunService::handleRollRequest()
+{
+    // Declare Variables
+    QString rollResult;
+    QString concatMSG;
+    Dice newDice;
+    int modifier_int = 0;
+
     // put msg in new QString
     QString fullMSG((char *) msg->data());
-    QString rollRequest = fullMSG.split('>').at(2);
-    QString modifier_str = fullMSG.split('>').at(3);
+    QString rollRequest = fullMSG.split('>').at(5);
+    QString modifier_str = fullMSG.split('>').at(4);
 
-    modifier_int = modifier_str.toInt();
+    modifier_int = modifier_str.toInt(); // Remove line when filehandling is done.
 
     // Print modifier (Debug)
     std::cout << "[Debug] Modifier: " << modifier_str.toStdString().c_str() << std::endl;
@@ -90,25 +128,9 @@ void ServiceSemKirkels::RunService::handleMessage()
     push.send(concatMSG.toStdString().c_str(), concatMSG.length());
 }
 
-void ServiceSemKirkels::RunService::runService()
+void ServiceSemKirkels::RunService::handleCreatePlayer()
 {
-    srand(time(NULL));
 
-    try
-    {
-        while(subscriber.connected())
-        {
-            // Setup sockets
-            setupSockets();
-
-            // Handle incomming messages
-            handleMessage();
-        }
-    }
-    catch(zmq::error_t &ex)
-    {
-        std::cerr << "Caught an exception : " << ex.what();
-    }
 }
 
 ServiceSemKirkels::RunService::~RunService()
