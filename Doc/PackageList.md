@@ -1,10 +1,21 @@
 # Registration
 
 ## Register player
-``` Service>Dice?>RegisterPlayer>layername>Strength>Dexterity>Constitution>Intelligence>Wisdom>Charisma> ```  
+``` Service>Dice?>RegisterPlayer>Playername>Strength>Dexterity>Constitution>Intelligence>Wisdom>Charisma> ```  
 
 ## Player Registerd
 ``` Service>Dice!>RegisterPlayer>Reg_Player_Succes> ```  
+
+# Find existing player
+
+## Ask if player file is found
+``` Service>Dice?>ExistingPlayer>Playername> ```
+
+## Reply player file is found
+``` Service>Dice!>ExistingPlayer>Player_Found> ```
+
+## Reply player file not found
+``` Service>Dice!>ExistingPlayer>Player_Does_Not_Found> ```
 
 
 # Rolls

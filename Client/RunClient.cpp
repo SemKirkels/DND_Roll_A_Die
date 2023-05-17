@@ -148,6 +148,8 @@ void ClientSemKirkels::RunClient::runService()
             {
                 std::cout << "1. Create a player" << std::endl;
                 std::cout << "2. Roll a dice" << std::endl;
+                std::cout << "3. Exit" << std::endl;
+                std::cout << "Select an option: ";
                 std::cin >> input;
 
                 if(input == 1)
@@ -157,18 +159,28 @@ void ClientSemKirkels::RunClient::runService()
                 }
                 else if(input == 2)
                 {
+                    if(playerName.isEmpty())
+                    {
+                        std::cout << "Enter a charactername: " << std::endl;
+                        playerName = QTextStream(stdin).readLine();
+
+                        // Wait for server reply if the playerfile is available
+
+                        // If playerfile is not available create one
+                    }
+
                     requestMSG.append("Roll>");
 
-                    if(playerName == "")
-                    {
-                        //std::cin >> playerName.;
-                        requestMSG.append(playerName);
-                        requestMSG.append(">");
-                    }
+                    requestMSG.append(playerName);
+                    requestMSG.append(">");
 
                     // Select Dice
                     selectModifier();
                     selectDice();
+                }
+                else if(input == 3)
+                {
+                    exit(1);
                 }
                 else
                 {
