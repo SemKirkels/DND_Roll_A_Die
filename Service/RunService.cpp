@@ -56,6 +56,10 @@ void ServiceSemKirkels::RunService::handleMessage()
     {
         handleCreatePlayer();
     }
+    else if(fullMSG.split('>').at(2) == "ExistingPlayer")
+    {
+        handleExistingPlayer(fullMSG.split('>').at(3));
+    }
     else
     {
         std::cout << "[Debug] Invalid Request!" << std::endl;
@@ -67,13 +71,17 @@ void ServiceSemKirkels::RunService::handleRollRequest()
     // Declare Variables
     QString rollResult;
     QString concatMSG;
-    Dice newDice;
+    ServiceSemKirkels::player newPlayer;
+    ServiceSemKirkels::Dice newDice;
     int modifier_int = 0;
 
     // put msg in new QString
     QString fullMSG((char *) msg->data());
     QString rollRequest = fullMSG.split('>').at(5);
     QString modifier_str = fullMSG.split('>').at(4);
+
+    // Read Modifiers from file
+    newPlayer.readModifiers(playerName, modifier_str);
 
     modifier_int = modifier_str.toInt(); // Remove line when filehandling is done.
 
@@ -129,6 +137,11 @@ void ServiceSemKirkels::RunService::handleRollRequest()
 }
 
 void ServiceSemKirkels::RunService::handleCreatePlayer()
+{
+
+}
+
+void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
 {
 
 }

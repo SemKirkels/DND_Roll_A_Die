@@ -103,6 +103,12 @@ void ClientSemKirkels::RunClient::selectDice()
 
 void ClientSemKirkels::RunClient::createPlayer()
 {
+    // Enter playername
+    std::cout << "Enter a charactername: " << std::endl;
+    std::string inputString;
+    std::cin >> inputString;
+    playerName = QString(inputString.c_str());
+
     // Select Modifier
     selectModifier();
 }
@@ -111,6 +117,12 @@ void ClientSemKirkels::RunClient::selectModifier()
 {
     int modifier_int = 0;
     QString modifier_str;
+
+    // Enter all the modifiers
+
+    // Put the modifiers in one string
+
+    // Send the string
 
     while(1)
     {
@@ -162,8 +174,18 @@ void ClientSemKirkels::RunClient::runService()
                     if(playerName.isEmpty())
                     {
                         std::cout << "Enter a charactername: " << std::endl;
-                        playerName = QTextStream(stdin).readLine();
+                        std::string inputString;
+                        std::cin >> inputString;
+                        playerName = QString(inputString.c_str());
 
+                        // Find out if player file exists
+                        requestMSG.append("ExistingPlayer>");
+                        requestMSG.append(playerName);
+                        requestMSG.append(">");
+
+                        // Clear requestMSG
+                        requestMSG = "";
+                        requestMSG.append(pushTopic);
                         // Wait for server reply if the playerfile is available
 
                         // If playerfile is not available create one

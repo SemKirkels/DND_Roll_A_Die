@@ -7,6 +7,7 @@
 #include <QStringList>
 
 #include "dice.h"
+#include "player.h"
 
 #ifndef _WIN32
     #include <unistd.h>
@@ -34,6 +35,7 @@ namespace ServiceSemKirkels
             void handleMessage(void);
             void handleRollRequest(void);
             void handleCreatePlayer(void);
+            void handleExistingPlayer(QString Playername);
 
         private:
             QString subTopic    = "Service>DICE?>";

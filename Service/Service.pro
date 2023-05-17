@@ -9,8 +9,10 @@ INCLUDEPATH += $$PWD/../include
 
 SOURCES += main.cpp \
     RunService.cpp \
-    dice.cpp
+    dice.cpp \
+    player.cpp
 
 HEADERS += \
     RunService.h \
-    dice.h
+    dice.h \
+    player.h
