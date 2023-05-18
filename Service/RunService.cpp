@@ -11,11 +11,11 @@ void ServiceSemKirkels::RunService::runService()
 
     try
     {
+        // Setup sockets
+        setupSockets();
+
         while(subscriber.connected())
         {
-            // Setup sockets
-            setupSockets();
-
             // Handle incomming messages
             handleMessage();
         }
@@ -138,12 +138,12 @@ void ServiceSemKirkels::RunService::handleRollRequest()
 
 void ServiceSemKirkels::RunService::handleCreatePlayer()
 {
-
+    // Write modifiers to file using player object
 }
 
 void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
 {
-
+    // Check if a file with the playername is available using player object
 }
 
 ServiceSemKirkels::RunService::~RunService()

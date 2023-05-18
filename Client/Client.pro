@@ -8,7 +8,9 @@ LIBS += -L$$PWD/../lib -lzmq
 INCLUDEPATH += $$PWD/../include
 
 SOURCES += main.cpp \
-    RunClient.cpp
+    RunClient.cpp \
+    createplayer.cpp
 
 HEADERS += \
-    RunClient.h
+    RunClient.h \
+    createplayer.h

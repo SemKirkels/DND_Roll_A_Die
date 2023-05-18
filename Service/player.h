@@ -12,7 +12,6 @@ namespace ServiceSemKirkels
     {
         public:
             player();
-            void parceModifiers(QString modifier);
             void writeModifiers(QString playerName);
             int readModifiers(QString playerName, QString modifier_Request);
             ~player();

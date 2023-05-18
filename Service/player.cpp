@@ -5,13 +5,6 @@ ServiceSemKirkels::player::player()
 
 }
 
-void ServiceSemKirkels::player::parceModifiers(QString modifier)
-{
-    // convert modifiers from QString to int
-
-    // Put the new modifiers into the array
-}
-
 void ServiceSemKirkels::player::writeModifiers(QString playerName)
 {
     std::fstream inputFile;

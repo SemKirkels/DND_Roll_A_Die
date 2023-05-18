@@ -5,6 +5,84 @@ ClientSemKirkels::RunClient::RunClient() : context(1), push(context, ZMQ_PUSH), 
     std::cout << "Starting Client" << std::endl;
 }
 
+void ClientSemKirkels::RunClient::runService()
+{
+    try
+    {
+        // Declare Variables
+        int input = 0;
+
+        while(push.connected())
+        {
+            // Setup socket
+            setupSockets();
+
+            while(1)
+            {
+                std::cout << "1. Create a player" << std::endl;
+                std::cout << "2. Roll a dice" << std::endl;
+                std::cout << "3. Exit" << std::endl;
+                std::cout << "Select an option: ";
+                std::cin >> input;
+
+                if(input == 1)
+                {
+                    // Create player
+                    createPlayer();
+                }
+                else if(input == 2)
+                {
+                    if(playerName.isEmpty())
+                    {
+                        std::cout << "Enter a charactername: " << std::endl;
+                        std::string inputString;
+                        std::cin >> inputString;
+                        playerName = QString(inputString.c_str());
+
+                        // Find out if player file exists
+                        requestMSG.append("ExistingPlayer>");
+                        requestMSG.append(playerName);
+                        requestMSG.append(">");
+
+                        // Send msg
+
+                        // Clear requestMSG
+                        requestMSG = "";
+                        requestMSG.append(pushTopic);
+                        // Wait for server reply if the playerfile is available
+
+                        // If playerfile is not available create one
+                    }
+
+                    requestMSG.append("Roll>");
+
+                    requestMSG.append(playerName);
+                    requestMSG.append(">");
+
+                    // Select Dice
+                    selectDice();
+                }
+                else if(input == 3)
+                {
+                    exit(1);
+                }
+                else
+                {
+
+                }
+
+                // Clear the requestMSG after each send.
+                requestMSG = "";
+                requestMSG.append(pushTopic);
+            }
+        }
+    }
+    catch(zmq::error_t &ex)
+    {
+        std::cerr << "Caught an exception : " << ex.what();
+    }
+}
+
 void ClientSemKirkels::RunClient::setupSockets()
 {
     // Connect sockets
@@ -17,6 +95,52 @@ void ClientSemKirkels::RunClient::setupSockets()
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
 
     requestMSG.append(pushTopic);
+}
+
+void ClientSemKirkels::RunClient::createPlayer()
+{
+    newPlayer.enterPlayerName();
+    playerName = newPlayer.getPlayerName();
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>
+    requestMSG.append("RegisterPlayer");
+    requestMSG.append(">");
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>
+    requestMSG.append(newPlayer.getPlayerName());
+    requestMSG.append(">");
+
+    // Enter all the modifiers
+    newPlayer.enterModifiers();
+
+    // Put the modifiers in one string
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>
+    requestMSG.append(newPlayer.getStrength());
+    requestMSG.append(">");
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>
+    requestMSG.append(newPlayer.getDexterity());
+    requestMSG.append(">");
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>
+    requestMSG.append(newPlayer.getConstitution());
+    requestMSG.append(">");
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>
+    requestMSG.append(newPlayer.getIntelligence());
+    requestMSG.append(">");
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>Wisdom>
+    requestMSG.append(newPlayer.getWisdom());
+    requestMSG.append(">");
+
+    // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>Wisdom>Charisma
+    requestMSG.append(newPlayer.getCharisma());
+    requestMSG.append(">");
+
+    // Send the string
+    push.send(requestMSG.toStdString().c_str(), requestMSG.length());
+    std::cout << std::endl;
 }
 
 void ClientSemKirkels::RunClient::selectDice()
@@ -52,6 +176,10 @@ void ClientSemKirkels::RunClient::selectDice()
        }
     }
 
+    // Message looks like this: Service>DICE?>Roll>PlayerName>Modifier>
+    // Enter Modifier type
+
+    // Message looks like this: Service>DICE?>ROLL>PlayerName>Modifier>Dice>
     // Switch case to concat requestMSG
     switch(input)
     {
@@ -99,122 +227,6 @@ void ClientSemKirkels::RunClient::selectDice()
 
     // Print message
     std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
-}
-
-void ClientSemKirkels::RunClient::createPlayer()
-{
-    // Enter playername
-    std::cout << "Enter a charactername: " << std::endl;
-    std::string inputString;
-    std::cin >> inputString;
-    playerName = QString(inputString.c_str());
-
-    // Select Modifier
-    selectModifier();
-}
-
-void ClientSemKirkels::RunClient::selectModifier()
-{
-    int modifier_int = 0;
-    QString modifier_str;
-
-    // Enter all the modifiers
-
-    // Put the modifiers in one string
-
-    // Send the string
-
-    while(1)
-    {
-        std::cout << "Enter your modifier: ";
-        std::cin >> modifier_int;
-
-        if(modifier_int >= -100 && modifier_int <= 100)
-        {
-            break;
-        }
-        else
-        {
-            modifier_int = 0;
-            std::cout << "Invalid input!" << std::endl;
-        }
-    }
-
-    requestMSG.append(modifier_str.setNum(modifier_int));
-    requestMSG.append(">");
-}
-
-void ClientSemKirkels::RunClient::runService()
-{
-    try
-    {
-        // Declare Variables
-        int input = 0;
-
-        while(push.connected())
-        {
-            // Setup socket
-            setupSockets();
-
-            while(1)
-            {
-                std::cout << "1. Create a player" << std::endl;
-                std::cout << "2. Roll a dice" << std::endl;
-                std::cout << "3. Exit" << std::endl;
-                std::cout << "Select an option: ";
-                std::cin >> input;
-
-                if(input == 1)
-                {
-                    // Create player
-                    createPlayer();
-                }
-                else if(input == 2)
-                {
-                    if(playerName.isEmpty())
-                    {
-                        std::cout << "Enter a charactername: " << std::endl;
-                        std::string inputString;
-                        std::cin >> inputString;
-                        playerName = QString(inputString.c_str());
-
-                        // Find out if player file exists
-                        requestMSG.append("ExistingPlayer>");
-                        requestMSG.append(playerName);
-                        requestMSG.append(">");
-
-                        // Clear requestMSG
-                        requestMSG = "";
-                        requestMSG.append(pushTopic);
-                        // Wait for server reply if the playerfile is available
-
-                        // If playerfile is not available create one
-                    }
-
-                    requestMSG.append("Roll>");
-
-                    requestMSG.append(playerName);
-                    requestMSG.append(">");
-
-                    // Select Dice
-                    selectModifier();
-                    selectDice();
-                }
-                else if(input == 3)
-                {
-                    exit(1);
-                }
-                else
-                {
-
-                }
-            }
-        }
-    }
-    catch(zmq::error_t &ex)
-    {
-        std::cerr << "Caught an exception : " << ex.what();
-    }
 }
 
 ClientSemKirkels::RunClient::~RunClient()

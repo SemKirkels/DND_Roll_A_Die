@@ -7,6 +7,8 @@
 #include <QStringList>
 #include <QTextStream>
 
+#include "createplayer.h"
+
 #ifndef _WIN32
     #include <unistd.h>
 #else
@@ -30,19 +32,19 @@ namespace ClientSemKirkels
 
         protected:
             void setupSockets(void);
-            void selectDice(void);
             void createPlayer(void);
-            void selectModifier(void);
+            void selectDice(void);
 
         private:
             QString subTopic    = "Service>DICE!>"; // Client receives answer
             QString pushTopic   = "Service>DICE?>"; // Client asks question
             zmq::message_t *msg = new zmq::message_t();
-            QString playerName;
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;
+            QString playerName;
             QString requestMSG;
+            CreatePlayer newPlayer;
     };
 }
 #endif // RUNCLIENT_H
