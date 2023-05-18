@@ -66,10 +66,10 @@ void ClientSemKirkels::RunClient::runService()
                     selectDice();
 
                     // Send Message
-                    handleSend();
+                    handleSendRoll();
 
                     // Receive Message
-                    handleRecv();
+                    handleRecvRoll();
                 }
                 else if(input == 3)
                 {
