@@ -33,7 +33,10 @@ namespace ClientSemKirkels
         protected:
             void setupSockets(void);
             void createPlayer(void);
+            void selectModifier(void);
             void selectDice(void);
+            void handleSendRoll(void);
+            void handleRecvRoll(void);
 
         private:
             QString subTopic    = "Service>DICE!>"; // Client receives answer

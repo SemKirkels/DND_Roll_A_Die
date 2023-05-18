@@ -59,8 +59,17 @@ void ClientSemKirkels::RunClient::runService()
                     requestMSG.append(playerName);
                     requestMSG.append(">");
 
+                    // Select Modifier
+                    selectModifier();
+
                     // Select Dice
                     selectDice();
+
+                    // Send Message
+                    handleSend();
+
+                    // Receive Message
+                    handleRecv();
                 }
                 else if(input == 3)
                 {
@@ -143,11 +152,81 @@ void ClientSemKirkels::RunClient::createPlayer()
     std::cout << std::endl;
 }
 
+void ClientSemKirkels::RunClient::selectModifier()
+{
+    // Message looks like this: Service>DICE?>Roll>PlayerName>Modifier>
+    // Enter Modifier type
+
+    int input = 0;
+
+    // Menu to select dice
+    while(1)
+    {
+       std::cout << "Modifiers " << std::endl;
+       std::cout << "1. Strength" << std::endl;
+       std::cout << "2. Dexterity" << std::endl;
+       std::cout << "3. Constitution" << std::endl;
+       std::cout << "4. Intelligence" << std::endl;
+       std::cout << "5. Wisdom" << std::endl;
+       std::cout << "6. Charisma" << std::endl;
+       std::cout << "7. Exit" << std::endl;
+       std::cout << "Select a modifier: ";
+       std::cin >> input;
+
+       if(input < 1 || input > 7)
+       {
+           std::cout << "Invalid Input!" << std::endl << std::endl;
+           // Do noting
+       }
+       else if(input == 7)
+       {
+           exit(1);
+       }
+       else
+       {
+           break;
+       }
+    }
+
+    // Switch case to concat requestMSG
+    switch(input)
+    {
+        case 1:
+            requestMSG.append("Strength>");
+            std::cout << "Requested Strength" << std::endl;
+            break;
+        case 2:
+            requestMSG.append("Dexterity>");
+            std::cout << "Requested Dexterity" << std::endl;
+            break;
+        case 3:
+            requestMSG.append("Constitution>");
+            std::cout << "Requested Constitution" << std::endl;
+            break;
+        case 4:
+            requestMSG.append("Intelligence>");
+            std::cout << "Requested Intelligence" << std::endl;
+            break;
+        case 5:
+            requestMSG.append("Wisdom>");
+            std::cout << "Requested Wisdom" << std::endl;
+            break;
+        case 6:
+            requestMSG.append("Charisma>");
+            std::cout << "Requested Charisma" << std::endl;
+            break;
+        default:
+            break;
+    }
+}
+
 void ClientSemKirkels::RunClient::selectDice()
 {
     int input = 0;
 
+    // Message looks like this: Service>DICE?>ROLL>PlayerName>Modifier>Dice>
     // Menu to select dice
+
     while(1)
     {
        std::cout << "Roll A Dice" << std::endl;
@@ -175,9 +254,6 @@ void ClientSemKirkels::RunClient::selectDice()
            break;
        }
     }
-
-    // Message looks like this: Service>DICE?>Roll>PlayerName>Modifier>
-    // Enter Modifier type
 
     // Message looks like this: Service>DICE?>ROLL>PlayerName>Modifier>Dice>
     // Switch case to concat requestMSG
@@ -210,11 +286,17 @@ void ClientSemKirkels::RunClient::selectDice()
         default:
             break;
     }
+}
 
+void ClientSemKirkels::RunClient::handleSendRoll()
+{
     // Send request to service
     push.send(requestMSG.toStdString().c_str(), requestMSG.length());
     std::cout << std::endl;
+}
 
+void ClientSemKirkels::RunClient::handleRecvRoll()
+{
     // Receive message
     subscriber.recv(msg);
 
