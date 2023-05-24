@@ -15,7 +15,7 @@
 ``` Service>Dice!>ExistingPlayer>Player_Found> ```
 
 ## Reply player file not found
-``` Service>Dice!>ExistingPlayer>Player_Does_Not_Found> ```
+``` Service>Dice!>ExistingPlayer>Player_Not_Found> ```
 
 
 # Rolls

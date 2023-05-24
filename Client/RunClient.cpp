@@ -39,6 +39,7 @@ void ClientSemKirkels::RunClient::runService()
                         std::cin >> inputString;
                         playerName = QString(inputString.c_str());
 
+                        // Message looks like this: Service>DICE?>ExistingPlayer>Playername>
                         // Find out if player file exists
                         requestMSG.append("ExistingPlayer>");
                         requestMSG.append(playerName);
@@ -46,12 +47,21 @@ void ClientSemKirkels::RunClient::runService()
 
                         // Send msg
 
+                        // Message looks like this: Service>DICE?>
                         // Clear requestMSG
                         requestMSG = "";
                         requestMSG.append(pushTopic);
                         // Wait for server reply if the playerfile is available
 
                         // If playerfile is not available create one
+                        QString result = recvExistingPlayer.split('>').at(3);
+                        if(result == "Player_Not_Found")
+                        {
+                            std::cout << "Player not found" << std::endl;
+                            std::cout << "Create a new player" << std::endl;
+
+                            createPlayer();
+                        }
                     }
 
                     requestMSG.append("Roll>");
@@ -77,7 +87,7 @@ void ClientSemKirkels::RunClient::runService()
                 }
                 else
                 {
-
+                    std::cout << "Invalid input!" << std::endl;
                 }
 
                 // Clear the requestMSG after each send.
@@ -154,12 +164,10 @@ void ClientSemKirkels::RunClient::createPlayer()
 
 void ClientSemKirkels::RunClient::selectModifier()
 {
-    // Message looks like this: Service>DICE?>Roll>PlayerName>Modifier>
-    // Enter Modifier type
-
     int input = 0;
 
-    // Menu to select dice
+    // Message looks like this: Service>DICE?>Roll>PlayerName>Modifier>
+    // Menu to select modifier
     while(1)
     {
        std::cout << "Modifiers " << std::endl;
@@ -298,17 +306,37 @@ void ClientSemKirkels::RunClient::handleSendRoll()
 void ClientSemKirkels::RunClient::handleRecvRoll()
 {
     // Receive message
-    subscriber.recv(msg);
+    subscriber.recv(msg_Roll_Result);
 
-    // Print message (Debug)
-    std::cout << "[Debug] Received:" << std::string((char*) msg->data(), msg->size()) << std::endl;
+    if(DEBUG_ENABLE == 1)
+    {
+        // Print message (Debug)
+        std::cout << "[Debug] Received:" << std::string((char*) msg_Roll_Result->data(), msg_Roll_Result->size()) << std::endl;
+    }
 
     // Convert message type
-    QString fullMessage((char *) msg->data()); // Convert ZMQ message to QString
+    QString fullMessage((char *) msg_Roll_Result->data()); // Convert ZMQ message to QString
     QString result = fullMessage.split('>').at(2);
 
     // Print message
     std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
+}
+
+void ClientSemKirkels::RunClient::handleRecvExistingPlayer()
+{
+    zmq::message_t *msg_Existing_Player = new zmq::message_t();
+
+    // Receive message
+    subscriber.recv(msg_Existing_Player);
+
+    if(DEBUG_ENABLE == 1)
+    {
+        // Print message (Debug)
+        std::cout << "[Debug] Received:" << std::string((char*) msg_Existing_Player->data(), msg_Existing_Player->size()) << std::endl;
+    }
+
+    // Convert message type
+    recvExistingPlayer((char *) msg_Existing_Player->data()); // Convert ZMQ message to QString
 }
 
 ClientSemKirkels::RunClient::~RunClient()
