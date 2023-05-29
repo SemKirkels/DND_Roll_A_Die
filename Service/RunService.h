@@ -9,6 +9,7 @@
 
 #include "dice.h"
 #include "player.h"
+#include "defines.h"
 
 #ifndef _WIN32
     #include <unistd.h>
@@ -34,14 +35,13 @@ namespace ServiceSemKirkels
         protected:
             void setupSockets(void);
             void handleMessage(void);
-            void handleRollRequest(void);
-            void handleCreatePlayer(void);
+            void handleRollRequest(QString Playername);
+            void handleCreatePlayer(QString Playername, QString modifierStr);
             void handleExistingPlayer(QString Playername);
 
         private:
             QString subTopic    = "Service>DICE?>";
             QString pushTopic   = "Service>DICE!>";
-            QString playerName  = "";
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;

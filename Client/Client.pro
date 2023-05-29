@@ -13,7 +13,5 @@ SOURCES += main.cpp \
 
 HEADERS += \
     RunClient.h \
-    createplayer.h
-
-DEFINES += DEBUG_ENABLE = 1
-DEFINES += RUN_LOCAL = 0
+    createplayer.h \
+    defines.h

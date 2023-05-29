@@ -30,6 +30,7 @@ void ServiceSemKirkels::RunService::setupSockets()
 {
     if(RUN_LOCAL == 1)
     {
+        std::cout << "Running local" << std::endl;
         push.connect("tcp://localhost:24041");
         subscriber.connect("tcp://localhost:24042");
     }
@@ -58,14 +59,17 @@ void ServiceSemKirkels::RunService::handleMessage()
 
     if(fullMSG.split('>').at(2) == "Roll")
     {
-        handleRollRequest();
+        std::cout << "Roll a dice" << std::endl;
+        handleRollRequest(fullMSG.split('>').at(3));
     }
     else if(fullMSG.split('>').at(2) == "RegisterPlayer")
     {
-        handleCreatePlayer();
+        std::cout << "Create a player" << std::endl;
+        handleCreatePlayer(fullMSG.split('>').at(3), fullMSG.split('>').at(4));
     }
     else if(fullMSG.split('>').at(2) == "ExistingPlayer")
     {
+        std::cout << "Check player" << std::endl;
         handleExistingPlayer(fullMSG.split('>').at(3));
     }
     else
@@ -74,7 +78,7 @@ void ServiceSemKirkels::RunService::handleMessage()
     }
 }
 
-void ServiceSemKirkels::RunService::handleRollRequest()
+void ServiceSemKirkels::RunService::handleRollRequest(QString Playername)
 {
     // Declare Variables
     QString rollResult;
@@ -89,9 +93,7 @@ void ServiceSemKirkels::RunService::handleRollRequest()
     QString modifier_str = fullMSG.split('>').at(4);
 
     // Read Modifiers from file
-    newPlayer.readModifiers(playerName, modifier_str);
-
-    modifier_int = modifier_str.toInt(); // Remove line when filehandling is done.
+    modifier_int = newPlayer.readModifiers(Playername, modifier_str);
 
     if(DEBUG_ENABLE == 1)
     {
@@ -140,6 +142,8 @@ void ServiceSemKirkels::RunService::handleRollRequest()
 
     // Construct string to push
     concatMSG.append(pushTopic);
+    concatMSG.append(Playername);
+    concatMSG.append(">");
     concatMSG.append(rollResult);
     concatMSG.append(">");
 
@@ -147,9 +151,21 @@ void ServiceSemKirkels::RunService::handleRollRequest()
     push.send(concatMSG.toStdString().c_str(), concatMSG.length());
 }
 
-void ServiceSemKirkels::RunService::handleCreatePlayer()
+void ServiceSemKirkels::RunService::handleCreatePlayer(QString Playername, QString modifierStr)
 {
+    QString concatMSG;
+    ServiceSemKirkels::player newPlayer;
+
     // Write modifiers to file using player object
+    newPlayer.writeModifiers(Playername, modifierStr);
+
+    concatMSG.append(pushTopic);
+    concatMSG.append(Playername);
+    concatMSG.append(">");
+
+    concatMSG.append("Reg_Player_Success>");
+
+    push.send(concatMSG.toStdString().c_str(), concatMSG.length());
 }
 
 void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
@@ -160,6 +176,8 @@ void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
 
     // Append topic
     concatMSG.append(pushTopic);
+    concatMSG.append(Playername);
+    concatMSG.append(">");
     concatMSG.append("ExistingPlayer>");
 
     // Check if playerfile exists
@@ -167,15 +185,29 @@ void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
 
     if(fileIsOpen == true)
     {
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug]: Player found!" << std::endl;
+        }
+
         // append result
         concatMSG.append("Player_Found>");
     }
     else
     {
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug]: Player not found!" << std::endl;
+        }
+
         // append result
         concatMSG.append("Player_Not_Found>");
     }
 
+    if(DEBUG_ENABLE == 1)
+    {
+        std::cout << "[Debug] send: " << concatMSG.toStdString().c_str() << std::endl;
+    }
     push.send(concatMSG.toStdString().c_str(), concatMSG.length());
 }
 

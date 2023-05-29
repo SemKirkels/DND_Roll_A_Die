@@ -14,8 +14,6 @@ SOURCES += main.cpp \
 
 HEADERS += \
     RunService.h \
+    defines.h \
     dice.h \
     player.h
-
-DEFINES += DEBUG_ENABLE = 1
-DEFINES += RUN_LOCAL = 0

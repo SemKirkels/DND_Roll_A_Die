@@ -1,21 +1,24 @@
 # Registration
 
 ## Register player
-``` Service>Dice?>RegisterPlayer>Playername>Strength>Dexterity>Constitution>Intelligence>Wisdom>Charisma> ```  
+``` Service>Dice?>RegisterPlayer>Playername>Strength-Dexterity-Constitution-Intelligence-Wisdom-Charisma> ```  
 
 ## Player Registerd
-``` Service>Dice!>RegisterPlayer>Reg_Player_Succes> ```  
+``` Service>Dice!>PlayerName>RegisterPlayer>Reg_Player_Success> ```  
+
+## Player not Registerd
+``` Service>Dice!>PlayerName>RegisterPlayer>Reg_Player_Failed> ```
 
 # Find existing player
 
 ## Ask if player file is found
-``` Service>Dice?>ExistingPlayer>Playername> ```
+``` Service>Dice?>PlayerName>ExistingPlayer>Playername> ```
 
 ## Reply player file is found
-``` Service>Dice!>ExistingPlayer>Player_Found> ```
+``` Service>Dice!>PlayerName>ExistingPlayer>Player_Found> ```
 
 ## Reply player file not found
-``` Service>Dice!>ExistingPlayer>Player_Not_Found> ```
+``` Service>Dice!>PlayerName>ExistingPlayer>Player_Not_Found> ```
 
 
 # Rolls
@@ -39,5 +42,5 @@
 ``` Service>Dice?>Roll>Playername>Modifier>D20>```  
 
 ## Roll Result
-``` Service>Dice!>4>```  
+``` Service>Dice!>PlayerName>4>```  
 (The number can be any number)

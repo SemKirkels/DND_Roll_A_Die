@@ -7,13 +7,15 @@
 #include <fstream>
 #include <iostream>
 
+#include "defines.h"
+
 namespace ServiceSemKirkels
 {
     class player
     {
         public:
             player();
-            void writeModifiers(QString playerName);
+            void writeModifiers(QString playerName, QString modifierStr);
             int readModifiers(QString playerName, QString modifier_Request);
             bool checkExistingPlayer(QString Playername);
             ~player();
@@ -21,7 +23,6 @@ namespace ServiceSemKirkels
         protected:
 
         private:
-            int modifiers[6];
     };
 }
 #endif // PLAYER_H

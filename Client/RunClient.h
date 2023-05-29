@@ -8,6 +8,7 @@
 #include <QTextStream>
 
 #include "createplayer.h"
+#include "defines.h"
 
 #ifndef _WIN32
     #include <unistd.h>
@@ -31,20 +32,20 @@ namespace ClientSemKirkels
             ~RunClient();
 
         protected:
-            void setupSockets(void);
-            void createPlayer(void);
-            int selectModifier(void);
-            int selectDice(void);
-            void handleSendMsg(void);
-            void handleRecvRoll(void);
-            void handleRecvExistingPlayer(void);
-            void clearTopic(void);
+            void setupSockets(void);                // Sets up the sub and push
+            int createPlayer(void);                 // Lets the user enter a name and modifiers
+            int selectModifier(void);               // Lets the user select the modifier used for the roll
+            int selectDice(void);                   // Lets the user select the dice
+            void handleSendMsg(void);               // Sends a message to the broker
+            void handleRecvRoll(void);              // Receives the roll result and parces it
+            void handleRecvExistingPlayer(void);    // Receives the reply to the question: "Does this player exist?"
+            void checkExistingPlayer(void);         // Sends a request to find out if the player exists
+            void clearTopic(void);                  // Clears the push topic and resets it to default
 
-        private:
             QString subTopic    = "Service>DICE!>"; // Client receives answer
             QString pushTopic   = "Service>DICE?>"; // Client asks question
 
-            zmq::message_t *msg_Roll_Result = new zmq::message_t();
+        private:
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;
@@ -52,6 +53,7 @@ namespace ClientSemKirkels
             QString playerName;
             QString requestMSG;
             QString recvExistingPlayer;
+            QString recvAckCreatePlayer;
 
             CreatePlayer newPlayer;
     };

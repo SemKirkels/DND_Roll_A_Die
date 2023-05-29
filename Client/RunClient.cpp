@@ -13,105 +13,63 @@ int ClientSemKirkels::RunClient::runService()
         int input = 0;
         int rslt = 0;
 
+        // Setup socket
+        setupSockets();
+
         while(push.connected())
         {
-            // Setup socket
-            setupSockets();
+            std::cout << "1. Create a player" << std::endl;
+            std::cout << "2. Roll a dice" << std::endl;
+            std::cout << "3. Exit" << std::endl;
+            std::cout << "Select an option: ";
+            std::cin >> input;
+            std::cout << std::endl;
 
-            while(1)
+            if(input == 1)
             {
-                std::cout << "1. Create a player" << std::endl;
-                std::cout << "2. Roll a dice" << std::endl;
-                std::cout << "3. Exit" << std::endl;
-                std::cout << "Select an option: ";
-                std::cin >> input;
-                std::cout << std::endl;
+                // Create player
+                createPlayer();
+            }
+            else if(input == 2)
+            {
+                checkExistingPlayer();
 
-                if(input == 1)
-                {
-                    // Create player
-                    createPlayer();
-                }
-                else if(input == 2)
-                {
-                    if(playerName.isEmpty())
-                    {
-                        std::cout << "Enter a charactername: " << std::endl;
-                        std::string inputString;
-                        std::cin >> inputString;
-                        playerName = QString(inputString.c_str());
-                        if(DEBUG_ENABLE == 1)
-                        {
-                            // Print message (Debug)
-                            std::cout << "[Debug] name: " << playerName.toStdString().c_str() << std::endl;
-                        }
+                requestMSG.append("Roll>");
 
-                        // Message looks like this: Service>DICE?>ExistingPlayer>Playername>
-                        // Find out if player file exists
-                        requestMSG.append("ExistingPlayer>");
-                        requestMSG.append(playerName);
-                        requestMSG.append(">");
+                requestMSG.append(playerName);
+                requestMSG.append(">");
 
-                        // Send msg
-                        handleSendMsg();
-
-                        // Wait for server reply if the playerfile is available
-                        handleRecvExistingPlayer();
-
-                        // If playerfile is not available create one
-                        QString result = recvExistingPlayer.split('>').at(3);
-                        if(result == "Player_Not_Found")
-                        {
-                            std::cout << "Player not found" << std::endl;
-                            std::cout << "Create a new player" << std::endl;
-
-                            clearTopic();
-
-                            createPlayer();
-                        }
-
-                        // Message looks like this: Service>DICE?>
-                        // Clear requestMSG
-                        clearTopic();
-                    }
-
-                    requestMSG.append("Roll>");
-
-                    requestMSG.append(playerName);
-                    requestMSG.append(">");
-
-                    // Select Modifier
-                    rslt = selectModifier();
-                    if(rslt == 1)
-                    {
-                        return 1;
-                    }
-
-                    // Select Dice
-                    rslt = selectDice();
-                    if(rslt == 1)
-                    {
-                        return 1;
-                    }
-
-                    // Send Message
-                    handleSendMsg();
-
-                    // Receive Message
-                    handleRecvRoll();
-                }
-                else if(input == 3)
+                // Select Modifier
+                rslt = selectModifier();
+                if(rslt == 1)
                 {
                     return 1;
                 }
-                else
+
+                // Select Dice
+                rslt = selectDice();
+                if(rslt == 1)
                 {
-                    std::cout << "Invalid input!" << std::endl;
+                    return 1;
                 }
 
-                // Clear the requestMSG after each send.
-                clearTopic();
+                // Send Message
+                handleSendMsg();
+
+                // Receive Message
+                handleRecvRoll();
             }
+            else if(input == 3)
+            {
+                return 1;
+            }
+            else
+            {
+                std::cout << "Invalid input!" << std::endl;
+            }
+
+            // Clear the requestMSG after each send.
+            clearTopic();
         }
     }
     catch(zmq::error_t &ex)
@@ -123,10 +81,11 @@ int ClientSemKirkels::RunClient::runService()
 }
 
 void ClientSemKirkels::RunClient::setupSockets()
-{
+{  
     // Connect sockets
     if(RUN_LOCAL == 1)
     {
+        std::cout << "Running local" << std::endl;
         push.connect("tcp://localhost:24041");
         subscriber.connect("tcp://localhost:24042");
     }
@@ -136,16 +95,20 @@ void ClientSemKirkels::RunClient::setupSockets()
         subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
     }
 
+    newPlayer.enterPlayerName();
+    playerName = newPlayer.getPlayerName();
+    subTopic.append(playerName);
+    subTopic.append(">");
+
     // Set Socket options
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
 
     requestMSG.append(pushTopic);
 }
 
-void ClientSemKirkels::RunClient::createPlayer()
+int ClientSemKirkels::RunClient::createPlayer()
 {
-    newPlayer.enterPlayerName();
-    playerName = newPlayer.getPlayerName();
+    zmq::message_t *msg_Ack_Create_Player = new zmq::message_t();
 
     // Message looks like this: Service>DICE?>RegisterPlayer>
     requestMSG.append("RegisterPlayer");
@@ -161,23 +124,23 @@ void ClientSemKirkels::RunClient::createPlayer()
     // Put the modifiers in one string
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>
     requestMSG.append(newPlayer.getStrength());
-    requestMSG.append(">");
+    requestMSG.append("-");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>
     requestMSG.append(newPlayer.getDexterity());
-    requestMSG.append(">");
+    requestMSG.append("-");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>
     requestMSG.append(newPlayer.getConstitution());
-    requestMSG.append(">");
+    requestMSG.append("-");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>
     requestMSG.append(newPlayer.getIntelligence());
-    requestMSG.append(">");
+    requestMSG.append("-");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>Wisdom>
     requestMSG.append(newPlayer.getWisdom());
-    requestMSG.append(">");
+    requestMSG.append("-");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>Wisdom>Charisma
     requestMSG.append(newPlayer.getCharisma());
@@ -186,6 +149,31 @@ void ClientSemKirkels::RunClient::createPlayer()
     // Send the string
     push.send(requestMSG.toStdString().c_str(), requestMSG.length());
     std::cout << std::endl;
+
+    // Recv ack
+    subscriber.recv(msg_Ack_Create_Player);
+
+    if(DEBUG_ENABLE == 1)
+    {
+        // Print message (Debug)
+        std::cout << "[Debug] Received: " << std::string((char*) msg_Ack_Create_Player->data(), msg_Ack_Create_Player->size()) << std::endl;
+    }
+
+    // Convert message type
+    recvAckCreatePlayer = QString((char *) msg_Ack_Create_Player->data()); // Convert ZMQ message to QString
+
+    // If registration failed return 1
+    if(recvAckCreatePlayer.split('>').at(3) != "Reg_Player_Success")
+    {
+        std::cout << "Player registration failed!" << std::endl;
+        return 1;
+    }
+    else
+    {
+        std::cout << "Player registration success!" << std::endl;
+    }
+
+    return 0;
 }
 
 int ClientSemKirkels::RunClient::selectModifier()
@@ -339,6 +327,8 @@ void ClientSemKirkels::RunClient::handleSendMsg()
 
 void ClientSemKirkels::RunClient::handleRecvRoll()
 {
+    zmq::message_t *msg_Roll_Result = new zmq::message_t();
+
     // Receive message
     subscriber.recv(msg_Roll_Result);
 
@@ -350,7 +340,7 @@ void ClientSemKirkels::RunClient::handleRecvRoll()
 
     // Convert message type
     QString fullMessage((char *) msg_Roll_Result->data()); // Convert ZMQ message to QString
-    QString result = fullMessage.split('>').at(2);
+    QString result = fullMessage.split('>').at(3);
 
     // Print message
     std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
@@ -372,6 +362,41 @@ void ClientSemKirkels::RunClient::handleRecvExistingPlayer()
 
     // Convert message type
     recvExistingPlayer = QString((char *) msg_Existing_Player->data()); // Convert ZMQ message to QString
+}
+
+void ClientSemKirkels::RunClient::checkExistingPlayer()
+{
+    // Message looks like this: Service>DICE?>ExistingPlayer>Playername>
+    // Find out if player file exists
+    requestMSG.append("ExistingPlayer>");
+    requestMSG.append(playerName);
+    requestMSG.append(">");
+
+    // Send msg
+    handleSendMsg();
+
+    // Wait for server reply if the playerfile is available
+    handleRecvExistingPlayer();
+
+    // If playerfile is not available create one
+    QString result = recvExistingPlayer.split('>').at(4);
+    if(result == "Player_Not_Found")
+    {
+        std::cout << "Player not found" << std::endl;
+        std::cout << "Create a new player" << std::endl;
+
+        clearTopic();
+
+        createPlayer();
+    }
+    else
+    {
+        std::cout << "Player found" << std::endl;
+    }
+
+    // Message looks like this: Service>DICE?>
+    // Clear requestMSG
+    clearTopic();
 }
 
 void ClientSemKirkels::RunClient::clearTopic()
