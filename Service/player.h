@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QTextStream>
 #include <fstream>
+#include <iostream>
 
 namespace ServiceSemKirkels
 {
@@ -14,6 +15,7 @@ namespace ServiceSemKirkels
             player();
             void writeModifiers(QString playerName);
             int readModifiers(QString playerName, QString modifier_Request);
+            bool checkExistingPlayer(QString Playername);
             ~player();
 
         protected:

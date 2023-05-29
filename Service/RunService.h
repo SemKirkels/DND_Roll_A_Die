@@ -5,6 +5,7 @@
 #include <zmq.hpp>
 #include <QString>
 #include <QStringList>
+#include <fstream>
 
 #include "dice.h"
 #include "player.h"

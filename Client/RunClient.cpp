@@ -5,12 +5,13 @@ ClientSemKirkels::RunClient::RunClient() : context(1), push(context, ZMQ_PUSH), 
     std::cout << "Starting Client" << std::endl;
 }
 
-void ClientSemKirkels::RunClient::runService()
+int ClientSemKirkels::RunClient::runService()
 {
     try
     {
         // Declare Variables
         int input = 0;
+        int rslt = 0;
 
         while(push.connected())
         {
@@ -24,6 +25,7 @@ void ClientSemKirkels::RunClient::runService()
                 std::cout << "3. Exit" << std::endl;
                 std::cout << "Select an option: ";
                 std::cin >> input;
+                std::cout << std::endl;
 
                 if(input == 1)
                 {
@@ -38,6 +40,11 @@ void ClientSemKirkels::RunClient::runService()
                         std::string inputString;
                         std::cin >> inputString;
                         playerName = QString(inputString.c_str());
+                        if(DEBUG_ENABLE == 1)
+                        {
+                            // Print message (Debug)
+                            std::cout << "[Debug] name: " << playerName.toStdString().c_str() << std::endl;
+                        }
 
                         // Message looks like this: Service>DICE?>ExistingPlayer>Playername>
                         // Find out if player file exists
@@ -46,12 +53,10 @@ void ClientSemKirkels::RunClient::runService()
                         requestMSG.append(">");
 
                         // Send msg
+                        handleSendMsg();
 
-                        // Message looks like this: Service>DICE?>
-                        // Clear requestMSG
-                        requestMSG = "";
-                        requestMSG.append(pushTopic);
                         // Wait for server reply if the playerfile is available
+                        handleRecvExistingPlayer();
 
                         // If playerfile is not available create one
                         QString result = recvExistingPlayer.split('>').at(3);
@@ -60,8 +65,14 @@ void ClientSemKirkels::RunClient::runService()
                             std::cout << "Player not found" << std::endl;
                             std::cout << "Create a new player" << std::endl;
 
+                            clearTopic();
+
                             createPlayer();
                         }
+
+                        // Message looks like this: Service>DICE?>
+                        // Clear requestMSG
+                        clearTopic();
                     }
 
                     requestMSG.append("Roll>");
@@ -70,20 +81,28 @@ void ClientSemKirkels::RunClient::runService()
                     requestMSG.append(">");
 
                     // Select Modifier
-                    selectModifier();
+                    rslt = selectModifier();
+                    if(rslt == 1)
+                    {
+                        return 1;
+                    }
 
                     // Select Dice
-                    selectDice();
+                    rslt = selectDice();
+                    if(rslt == 1)
+                    {
+                        return 1;
+                    }
 
                     // Send Message
-                    handleSendRoll();
+                    handleSendMsg();
 
                     // Receive Message
                     handleRecvRoll();
                 }
                 else if(input == 3)
                 {
-                    exit(1);
+                    return 1;
                 }
                 else
                 {
@@ -91,8 +110,7 @@ void ClientSemKirkels::RunClient::runService()
                 }
 
                 // Clear the requestMSG after each send.
-                requestMSG = "";
-                requestMSG.append(pushTopic);
+                clearTopic();
             }
         }
     }
@@ -100,15 +118,23 @@ void ClientSemKirkels::RunClient::runService()
     {
         std::cerr << "Caught an exception : " << ex.what();
     }
+
+    return 0;
 }
 
 void ClientSemKirkels::RunClient::setupSockets()
 {
     // Connect sockets
-    //push.connect("tcp://localhost:24041");
-    //subscriber.connect("tcp://localhost:24042");
-    push.connect("tcp://benternet.pxl-ea-ict.be:24041");
-    subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
+    if(RUN_LOCAL == 1)
+    {
+        push.connect("tcp://localhost:24041");
+        subscriber.connect("tcp://localhost:24042");
+    }
+    else
+    {
+        push.connect("tcp://benternet.pxl-ea-ict.be:24041");
+        subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
+    }
 
     // Set Socket options
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
@@ -162,7 +188,7 @@ void ClientSemKirkels::RunClient::createPlayer()
     std::cout << std::endl;
 }
 
-void ClientSemKirkels::RunClient::selectModifier()
+int ClientSemKirkels::RunClient::selectModifier()
 {
     int input = 0;
 
@@ -188,7 +214,7 @@ void ClientSemKirkels::RunClient::selectModifier()
        }
        else if(input == 7)
        {
-           exit(1);
+           return 1;
        }
        else
        {
@@ -226,9 +252,13 @@ void ClientSemKirkels::RunClient::selectModifier()
         default:
             break;
     }
+
+    std::cout << std::endl;
+
+    return 0;
 }
 
-void ClientSemKirkels::RunClient::selectDice()
+int ClientSemKirkels::RunClient::selectDice()
 {
     int input = 0;
 
@@ -255,7 +285,7 @@ void ClientSemKirkels::RunClient::selectDice()
        }
        else if(input == 7)
        {
-           exit(1);
+           return 1;
        }
        else
        {
@@ -294,9 +324,13 @@ void ClientSemKirkels::RunClient::selectDice()
         default:
             break;
     }
+
+    std::cout << std::endl;
+
+    return 0;
 }
 
-void ClientSemKirkels::RunClient::handleSendRoll()
+void ClientSemKirkels::RunClient::handleSendMsg()
 {
     // Send request to service
     push.send(requestMSG.toStdString().c_str(), requestMSG.length());
@@ -320,6 +354,7 @@ void ClientSemKirkels::RunClient::handleRecvRoll()
 
     // Print message
     std::cout << "You rolled a: " << result.toStdString().c_str() << std::endl;
+    std::cout << std::endl;
 }
 
 void ClientSemKirkels::RunClient::handleRecvExistingPlayer()
@@ -336,7 +371,13 @@ void ClientSemKirkels::RunClient::handleRecvExistingPlayer()
     }
 
     // Convert message type
-    recvExistingPlayer((char *) msg_Existing_Player->data()); // Convert ZMQ message to QString
+    recvExistingPlayer = QString((char *) msg_Existing_Player->data()); // Convert ZMQ message to QString
+}
+
+void ClientSemKirkels::RunClient::clearTopic()
+{
+    requestMSG = "";
+    requestMSG.append(pushTopic);
 }
 
 ClientSemKirkels::RunClient::~RunClient()

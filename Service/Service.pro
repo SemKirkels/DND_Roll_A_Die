@@ -16,3 +16,6 @@ HEADERS += \
     RunService.h \
     dice.h \
     player.h
+
+DEFINES += DEBUG_ENABLE = 1
+DEFINES += RUN_LOCAL = 0

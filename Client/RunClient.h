@@ -9,8 +9,6 @@
 
 #include "createplayer.h"
 
-#define DEBUG_ENABLE 1
-
 #ifndef _WIN32
     #include <unistd.h>
 #else
@@ -29,17 +27,18 @@ namespace ClientSemKirkels
     {
         public:
             RunClient();
-            void runService();
+            int runService();
             ~RunClient();
 
         protected:
             void setupSockets(void);
             void createPlayer(void);
-            void selectModifier(void);
-            void selectDice(void);
-            void handleSendRoll(void);
+            int selectModifier(void);
+            int selectDice(void);
+            void handleSendMsg(void);
             void handleRecvRoll(void);
             void handleRecvExistingPlayer(void);
+            void clearTopic(void);
 
         private:
             QString subTopic    = "Service>DICE!>"; // Client receives answer

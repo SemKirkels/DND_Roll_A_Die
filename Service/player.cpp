@@ -61,6 +61,46 @@ int ServiceSemKirkels::player::readModifiers(QString playerName, QString modifie
     return modifier_int;
 }
 
+bool ServiceSemKirkels::player::checkExistingPlayer(QString Playername)
+{
+    QString filename;
+
+    // Concat filename
+    filename = Playername;
+    filename.append(".txt");
+    if(DEBUG_ENABLE == 1)
+    {
+        std::cout << "[Debug] filename: " << filename.toStdString().c_str() << std::endl;
+    }
+
+    // Open playerfile
+    std::ifstream playerFile;
+    playerFile.open(filename.toStdString().c_str());
+
+    if(playerFile.is_open())
+    {
+        // playerfile is open
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug] File opened"<< std::endl;
+        }
+
+        playerFile.close();
+        return true;
+    }
+    else
+    {
+        // playerfile is not open
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug] File not opened" << std::endl;
+        }
+
+        playerFile.close();
+        return false;
+    }
+}
+
 ServiceSemKirkels::player::~player()
 {
 

@@ -28,11 +28,16 @@ void ServiceSemKirkels::RunService::runService()
 
 void ServiceSemKirkels::RunService::setupSockets()
 {
-    // Connect sockets
-    //push.connect("tcp://localhost:24041");
-    //subscriber.connect("tcp://localhost:24042");
-    push.connect("tcp://benternet.pxl-ea-ict.be:24041");
-    subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
+    if(RUN_LOCAL == 1)
+    {
+        push.connect("tcp://localhost:24041");
+        subscriber.connect("tcp://localhost:24042");
+    }
+    else
+    {
+        push.connect("tcp://benternet.pxl-ea-ict.be:24041");
+        subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
+    }
 
     // Set Socket options
     subscriber.setsockopt(ZMQ_SUBSCRIBE, subTopic.toStdString().c_str(), subTopic.length());
@@ -43,8 +48,11 @@ void ServiceSemKirkels::RunService::handleMessage()
     // Send / Receive phase
     subscriber.recv(msg);
 
-    // Print message (Debug)
-    std::cout << "[Debug] Received: " << std::string((char*) msg->data(), msg->size()) << std::endl;
+    if(DEBUG_ENABLE == 1)
+    {
+        // Print message (Debug)
+        std::cout << "[Debug] Received: " << std::string((char*) msg->data(), msg->size()) << std::endl;
+    }
 
     QString fullMSG((char *) msg->data());
 
@@ -62,7 +70,7 @@ void ServiceSemKirkels::RunService::handleMessage()
     }
     else
     {
-        std::cout << "[Debug] Invalid Request!" << std::endl;
+        std::cout << "Invalid Request!" << std::endl;
     }
 }
 
@@ -85,8 +93,11 @@ void ServiceSemKirkels::RunService::handleRollRequest()
 
     modifier_int = modifier_str.toInt(); // Remove line when filehandling is done.
 
-    // Print modifier (Debug)
-    std::cout << "[Debug] Modifier: " << modifier_str.toStdString().c_str() << std::endl;
+    if(DEBUG_ENABLE == 1)
+    {
+        // Print modifier (Debug)
+        std::cout << "[Debug] Modifier: " << modifier_str.toStdString().c_str() << std::endl;
+    }
 
     // Call different function for each dice
     if(rollRequest == "D4")
@@ -143,7 +154,29 @@ void ServiceSemKirkels::RunService::handleCreatePlayer()
 
 void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
 {
-    // Check if a file with the playername is available using player object
+    ServiceSemKirkels::player newPlayer;
+    QString filename;
+    QString concatMSG;
+
+    // Append topic
+    concatMSG.append(pushTopic);
+    concatMSG.append("ExistingPlayer>");
+
+    // Check if playerfile exists
+    bool fileIsOpen = newPlayer.checkExistingPlayer(Playername);
+
+    if(fileIsOpen == true)
+    {
+        // append result
+        concatMSG.append("Player_Found>");
+    }
+    else
+    {
+        // append result
+        concatMSG.append("Player_Not_Found>");
+    }
+
+    push.send(concatMSG.toStdString().c_str(), concatMSG.length());
 }
 
 ServiceSemKirkels::RunService::~RunService()
