@@ -1,0 +1,47 @@
+name: Build Client
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - 'Client/*.cpp'
+      - 'Client/*.h'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build libzmq + cppzmq
+      run: |
+        mkdir libs
+        cd libs
+        git clone https://github.com/zeromq/libzmq.git
+        cd libzmq
+        mkdir build
+        cd build
+        cmake ..
+        sudo make -j4 install
+        cd ..
+        cd ..
+        git clone https://github.com/zeromq/cppzmq.git
+        cd cppzmq
+        mkdir build
+        cd build
+        cmake ..
+        sudo make -j4 install
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.4.2'
+    - name: Qmake
+      run: |
+        mkdir Qt
+        cd Qt
+        qmake -o Makefile ../Client/Client.pro
+    - name: make
+      run: cd Qt && make
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Roll_a_Dice_Client
+        path: Qt/Client
