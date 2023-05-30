@@ -54,7 +54,7 @@ void ServiceSemKirkels::RunService::setupSockets()
 }
 
 void ServiceSemKirkels::RunService::handleMessage()
-{
+{   
     // Send / Receive phase
     subscriber.recv(msg);
 

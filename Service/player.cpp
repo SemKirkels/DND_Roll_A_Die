@@ -79,7 +79,7 @@ int ServiceSemKirkels::player::readModifiers(QString playerName, QString modifie
     }
     else
     {
-        return 100;
+        exit(-1);
     }
 }
 
