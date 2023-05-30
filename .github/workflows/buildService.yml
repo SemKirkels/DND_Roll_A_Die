@@ -1,0 +1,49 @@
+name: Build Service
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - "main"
+    paths:
+      - 'Service/*.cpp'
+      - 'Service/*.h'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build libzmq
+      run: |
+        mkdir libs
+        cd libs
+        git clone https://github.com/zeromq/libzmq.git
+        mkdir build
+        cd build
+        cmake ..
+        sudo make -j4 install
+    - uses: actions/checkout@v3
+    - name: Build cppzmq
+      run: |
+        cd libs
+        git clone https://github.com/zeromq/cppzmq.git
+        cd cppzmq
+        mkdir build
+        cd build
+        cmake ..
+        sudo make -j4 install
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.4.2'
+    - name: Qmake
+      run: |
+        mkdir Qt
+        cd Qt
+        qmake -o Makefile ../Service/Service.pro
+    - name: make
+      run: cd Qt
+           make
+    - uses: actions/upload-artifact@v3
+      with:
+        name: Roll_a_Dice_Service
+        path: Qt/Service
