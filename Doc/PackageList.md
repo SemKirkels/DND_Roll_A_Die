@@ -44,3 +44,8 @@
 ## Roll Result
 ``` Service>Dice!>PlayerName>4>```  
 (The number can be any number)
+
+# How does it work?
+Below are two images that roughly describe the programs. The programs use the above commands to communicate with each other  
+![Client](./Pictures/Client.jpg)  
+![Service](./Pictures/Service.jpg)  
