@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include "defines.h"
+
 namespace ServiceSemKirkels
 {
     class Dice

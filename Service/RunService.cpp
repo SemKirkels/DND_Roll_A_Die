@@ -30,12 +30,21 @@ void ServiceSemKirkels::RunService::setupSockets()
 {
     if(RUN_LOCAL == 1)
     {
-        std::cout << "Running local" << std::endl;
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug]: Running local" << std::endl;
+        }
+
         push.connect("tcp://localhost:24041");
         subscriber.connect("tcp://localhost:24042");
     }
     else
     {
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug]: Running online" << std::endl;
+        }
+
         push.connect("tcp://benternet.pxl-ea-ict.be:24041");
         subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
     }

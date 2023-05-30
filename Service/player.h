@@ -15,9 +15,9 @@ namespace ServiceSemKirkels
     {
         public:
             player();
-            void writeModifiers(QString playerName, QString modifierStr);
-            int readModifiers(QString playerName, QString modifier_Request);
-            bool checkExistingPlayer(QString Playername);
+            void writeModifiers(QString playerName, QString modifierStr);       // Writes modifiers to file
+            int readModifiers(QString playerName, QString modifier_Request);    // Reads modifiers from file
+            bool checkExistingPlayer(QString Playername);                       // Checks if a playerfile exists
             ~player();
 
         protected:

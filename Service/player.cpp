@@ -8,6 +8,13 @@ ServiceSemKirkels::player::player()
 void ServiceSemKirkels::player::writeModifiers(QString playerName, QString modifierStr)
 {
     std::ofstream inputFile;
+    QString modifier_Arr[6];
+
+    // Put all the modifiers in an array
+    for(int i = 0; i < 6; i++)
+    {
+        modifier_Arr[i] = modifierStr.split(',').at(i);
+    }
 
     // Append .txt for filename
     playerName.append(".txt");
@@ -15,57 +22,60 @@ void ServiceSemKirkels::player::writeModifiers(QString playerName, QString modif
     // Openfile
     inputFile.open(playerName.toStdString().c_str());
 
-    // Write Modifiers
-    inputFile << modifierStr.toStdString().c_str();
+    // Write Modifiers line by line
+    for(int i = 0; i < 6; i++)
+    {
+        inputFile << modifier_Arr[i].toStdString().c_str() << "\r\n";
+    }
+
+    inputFile.close();
 }
 
 int ServiceSemKirkels::player::readModifiers(QString playerName, QString modifier_Request)
 {
     std::ifstream inputFile;    // file handle
 
-    char mod_char[6];           // Stores all the modifiers as char
-    char bin;                   // Used as garbage bin
-
     // Append .txt for filename
     playerName.append(".txt");
 
     // Openfile
     inputFile.open(playerName.toStdString().c_str());
 
-    inputFile >> mod_char[0] >> bin >> mod_char[1] >> bin >> mod_char[2] >> bin >> mod_char[3] >> bin >> mod_char[4] >> bin >> mod_char[5];
+    std::vector<std::string> mod_Vector; // Stores all the lines of the file
+    std::string mod_String; // Temp storage for each line
 
-    if(DEBUG_ENABLE == 1)
+    // read the file line by line and put it in the vector
+    while(std::getline(inputFile, mod_String))
     {
-        for(int i = 0; i < 6; i++)
-        {
-            std::cout << "[Debug]: Modifier[" << i << "]: " << mod_char[i] << std::endl;
-        }
+        mod_Vector.push_back(mod_String);
     }
+
+    inputFile.close();
 
     // return the right modifier
     if(modifier_Request == "Strength")
     {
-        return (int)mod_char[0] - 48;
+        return std::stoi(mod_Vector[0]);
     }
     else if(modifier_Request == "Dexterity")
     {
-        return (int)mod_char[1] - 48;
+        return std::stoi(mod_Vector[1]);
     }
     else if(modifier_Request == "Constitution")
     {
-        return (int)mod_char[2] - 48;
+        return std::stoi(mod_Vector[2]);
     }
     else if(modifier_Request == "Intelligence")
     {
-        return (int)mod_char[3] - 48;
+        return std::stoi(mod_Vector[3]);
     }
     else if(modifier_Request == "Wisdom")
     {
-        return (int)mod_char[4] - 48;
+        return std::stoi(mod_Vector[4]);
     }
     else if(modifier_Request == "Charisma")
     {
-        return (int)mod_char[5] - 48;
+        return std::stoi(mod_Vector[5]);
     }
     else
     {
@@ -94,7 +104,7 @@ bool ServiceSemKirkels::player::checkExistingPlayer(QString Playername)
         // playerfile is open
         if(DEBUG_ENABLE == 1)
         {
-            std::cout << "[Debug] File opened"<< std::endl;
+            std::cout << "[Debug]: File opened"<< std::endl;
         }
 
         playerFile.close();
@@ -105,7 +115,7 @@ bool ServiceSemKirkels::player::checkExistingPlayer(QString Playername)
         // playerfile is not open
         if(DEBUG_ENABLE == 1)
         {
-            std::cout << "[Debug] File not opened" << std::endl;
+            std::cout << "[Debug]: File not opened" << std::endl;
         }
 
         playerFile.close();

@@ -85,12 +85,21 @@ void ClientSemKirkels::RunClient::setupSockets()
     // Connect sockets
     if(RUN_LOCAL == 1)
     {
-        std::cout << "Running local" << std::endl;
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug]: Running local" << std::endl;
+        }
+
         push.connect("tcp://localhost:24041");
         subscriber.connect("tcp://localhost:24042");
     }
     else
     {
+        if(DEBUG_ENABLE == 1)
+        {
+            std::cout << "[Debug]: Running online" << std::endl;
+        }
+
         push.connect("tcp://benternet.pxl-ea-ict.be:24041");
         subscriber.connect("tcp://benternet.pxl-ea-ict.be:24042");
     }
@@ -124,23 +133,23 @@ int ClientSemKirkels::RunClient::createPlayer()
     // Put the modifiers in one string
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>
     requestMSG.append(newPlayer.getStrength());
-    requestMSG.append("-");
+    requestMSG.append(",");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>
     requestMSG.append(newPlayer.getDexterity());
-    requestMSG.append("-");
+    requestMSG.append(",");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>
     requestMSG.append(newPlayer.getConstitution());
-    requestMSG.append("-");
+    requestMSG.append(",");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>
     requestMSG.append(newPlayer.getIntelligence());
-    requestMSG.append("-");
+    requestMSG.append(",");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>Wisdom>
     requestMSG.append(newPlayer.getWisdom());
-    requestMSG.append("-");
+    requestMSG.append(",");
 
     // Message looks like this: Service>DICE?>RegisterPlayer>PlayerName>Strength>Dexterity>Constitution>Intelligence>Wisdom>Charisma
     requestMSG.append(newPlayer.getCharisma());

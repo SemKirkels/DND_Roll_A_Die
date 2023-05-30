@@ -1,7 +1,7 @@
 # Registration
 
 ## Register player
-``` Service>Dice?>RegisterPlayer>Playername>Strength-Dexterity-Constitution-Intelligence-Wisdom-Charisma> ```  
+``` Service>Dice?>RegisterPlayer>Playername>Strength,Dexterity,Constitution,Intelligence,Wisdom,Charisma> ```  
 
 ## Player Registerd
 ``` Service>Dice!>PlayerName>RegisterPlayer>Reg_Player_Success> ```  
