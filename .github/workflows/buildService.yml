@@ -1,8 +1,9 @@
 name: Build Service
 on:
-    push:
+  workflow_dispatch:
+  push:
     branches:
-      - main
+      - "main"
     paths:
       - 'Service/*.cpp'
       - 'Service/*.h'
