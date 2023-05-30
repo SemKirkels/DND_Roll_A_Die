@@ -17,6 +17,7 @@ jobs:
         mkdir libs
         cd libs
         git clone https://github.com/zeromq/libzmq.git
+        cd libzmq
         mkdir build
         cd build
         cmake ..
