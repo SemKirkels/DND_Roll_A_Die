@@ -40,8 +40,7 @@ jobs:
         cd Qt
         qmake -o Makefile ../Service/Service.pro
     - name: make
-      run: cd Qt
-           make
+      run: cd Qt && make
     - uses: actions/upload-artifact@v3
       with:
         name: Roll_a_Dice_Service
