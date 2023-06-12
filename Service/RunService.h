@@ -39,10 +39,12 @@ namespace ServiceSemKirkels
             void handleRollRequest(QString Playername);                         // Handles a roll request
             void handleCreatePlayer(QString Playername, QString modifierStr);   // Handles a new player
             void handleExistingPlayer(QString Playername);                      // Handles a request to check for existing players
+            void handleDeletePlayer(QString Playername);
+            void handleDiffCheck();
 
         private:
-            QString subTopic    = "Service>DICE?>";
-            QString pushTopic   = "Service>DICE!>";
+            QString subTopic        = "Service>DICE?>";
+            QString pushTopic       = "Service>DICE!>";
             zmq::context_t context;
             zmq::socket_t push;
             zmq::socket_t subscriber;

@@ -123,6 +123,22 @@ bool ServiceSemKirkels::player::checkExistingPlayer(QString Playername)
     }
 }
 
+void ServiceSemKirkels::player::deletePlayer(QString Playername)
+{
+    QString filename;
+
+    filename = Playername;
+    filename.append(".txt");
+    if(DEBUG_ENABLE == 1)
+    {
+        std::cout << "[Debug] filename: " << filename.toStdString().c_str() << std::endl;
+    }
+
+    remove(filename.toStdString().c_str());
+
+    std::cout << "Player removed" << std::endl;
+}
+
 ServiceSemKirkels::player::~player()
 {
 

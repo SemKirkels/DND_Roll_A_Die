@@ -18,6 +18,7 @@ namespace ServiceSemKirkels
             void writeModifiers(QString playerName, QString modifierStr);       // Writes modifiers to file
             int readModifiers(QString playerName, QString modifier_Request);    // Reads modifiers from file
             bool checkExistingPlayer(QString Playername);                       // Checks if a playerfile exists
+            void deletePlayer(QString Playername);
             ~player();
 
         protected:

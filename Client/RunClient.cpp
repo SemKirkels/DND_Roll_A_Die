@@ -20,7 +20,8 @@ int ClientSemKirkels::RunClient::runService()
         {
             std::cout << "1. Create a player" << std::endl;
             std::cout << "2. Roll a dice" << std::endl;
-            std::cout << "3. Exit" << std::endl;
+            std::cout << "3. Remove a player" << std::endl;
+            std::cout << "4. Exit" << std::endl;
             std::cout << "Select an option: ";
             std::cin >> input;
             std::cout << std::endl;
@@ -60,6 +61,10 @@ int ClientSemKirkels::RunClient::runService()
                 handleRecvRoll();
             }
             else if(input == 3)
+            {
+                removePlayer();
+            }
+            else if(input == 4)
             {
                 return 1;
             }
@@ -412,6 +417,23 @@ void ClientSemKirkels::RunClient::clearTopic()
 {
     requestMSG = "";
     requestMSG.append(pushTopic);
+}
+
+void ClientSemKirkels::RunClient::removePlayer()
+{
+    // Message looks like this: Service>DICE?>DeletePlayer>Playername>
+    requestMSG.append("DeletePlayer>");
+    requestMSG.append(playerName);
+    requestMSG.append(">");
+
+    if(DEBUG_ENABLE == 1)
+    {
+        std::cout << "[Debug] Send: " <<  requestMSG.toStdString().c_str() << std::endl;
+    }
+
+    handleSendMsg();
+
+    clearTopic();
 }
 
 ClientSemKirkels::RunClient::~RunClient()

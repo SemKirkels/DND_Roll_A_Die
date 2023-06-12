@@ -81,6 +81,16 @@ void ServiceSemKirkels::RunService::handleMessage()
         std::cout << "Check player" << std::endl;
         handleExistingPlayer(fullMSG.split('>').at(3));
     }
+    else if(fullMSG.split('>').at(2) == "DeletePlayer")
+    {
+        std::cout << "Delete a player" << std::endl;
+        handleDeletePlayer(fullMSG.split('>').at(3));
+    }
+    else if(fullMSG.split('>').at(2) == "DC")
+    {
+        std::cout << "Difficulty check" << std::endl;
+        handleDiffCheck();
+    }
     else
     {
         std::cout << "Invalid Request!" << std::endl;
@@ -218,6 +228,147 @@ void ServiceSemKirkels::RunService::handleExistingPlayer(QString Playername)
         std::cout << "[Debug] send: " << concatMSG.toStdString().c_str() << std::endl;
     }
     push.send(concatMSG.toStdString().c_str(), concatMSG.length());
+}
+
+void ServiceSemKirkels::RunService::handleDeletePlayer(QString Playername)
+{
+    ServiceSemKirkels::player newPlayer;
+
+    if(DEBUG_ENABLE == 1)
+    {
+        std::cout << "[Debug] Request received to remove player: " << Playername.toStdString().c_str() << std::endl;
+    }
+
+    newPlayer.deletePlayer(Playername);
+}
+
+void ServiceSemKirkels::RunService::handleDiffCheck()
+{
+    int numberOfPlayers = 0;
+    int diff;
+    QString diff_Str;
+    QString numberOfPlayers_Str;
+    QString DC_Input_MSG((char *) msg->data());
+    QString Modifier_Req;
+    QString Dice;
+
+    QString message_Passed;
+    QString message_Failed;
+
+    message_Passed.append("Service>Dice!>DC>");
+    message_Failed.append("Service>Dice!>DC>");
+
+    // Parce all the data from the message
+    diff_Str = DC_Input_MSG.split('>').at(3);
+    diff = diff_Str.toInt();
+    std::cout << "Difficulty: " << diff << std::endl;
+    message_Passed.append(diff_Str);
+    message_Passed.append(">");
+    message_Failed.append(diff_Str);
+    message_Failed.append(">");
+
+    Modifier_Req = DC_Input_MSG.split('>').at(4);
+    std::cout << "Modifier: " << Modifier_Req.toStdString().c_str() << std::endl;
+    message_Passed.append(Modifier_Req);
+    message_Passed.append(">");
+    message_Failed.append(Modifier_Req);
+    message_Failed.append(">");
+
+    Dice = DC_Input_MSG.split('>').at(5);
+    std::cout << "Dice: " << Dice.toStdString().c_str() << std::endl;
+
+    numberOfPlayers_Str = DC_Input_MSG.split('>').at(6);
+    numberOfPlayers = numberOfPlayers_Str.toInt();
+    std::cout << "Number of players: " << numberOfPlayers << std::endl;
+
+    message_Passed.append("Succes");
+    message_Passed.append(">");
+    message_Failed.append("Fail");
+    message_Failed.append(">");
+
+    // Create variables that store all the names, results, modifiers, ...
+    QString playerResults_Str[numberOfPlayers]; // Saves the rolled result in str
+    int playerResults[numberOfPlayers]; // Saves the rolled result in int
+    int modifier[numberOfPlayers]; // Saves the modifier of the player
+    ServiceSemKirkels::Dice newDice[numberOfPlayers]; // Creates a dice object for each player
+    ServiceSemKirkels::player newPlayer[numberOfPlayers]; // Creates a player object for each player
+    QString playerNames[numberOfPlayers]; // Saves the names of the players
+
+    // put all the playernames in an array
+    for(int i = 0; i < numberOfPlayers; i++)
+    {
+        playerNames[i] = DC_Input_MSG.split('>').at(7 + i);
+    }
+
+    // read the selected modifier for all the players
+    for(int i = 0; i < numberOfPlayers; i++)
+    {
+        modifier[i] = newPlayer[i].readModifiers(playerNames[i], Modifier_Req);
+    }
+
+    // throw the dice with modifier for each player
+    for(int i = 0; i < numberOfPlayers; i++)
+    {
+        // Call different function for each dice
+        if(Dice == "D4")
+        {
+            playerResults[i] = newDice[i].rollD4(modifier[i]);
+        }
+        else if(Dice == "D6")
+        {
+            playerResults[i] = newDice[i].rollD6(modifier[i]);
+        }
+        else if(Dice == "D8")
+        {
+            playerResults[i] = newDice[i].rollD8(modifier[i]);
+        }
+        else if(Dice == "D10")
+        {
+            playerResults[i] = newDice[i].rollD10(modifier[i]);
+        }
+        else if(Dice == "D12")
+        {
+            playerResults[i] = newDice[i].rollD12(modifier[i]);
+        }
+        else if(Dice == "D20")
+        {
+            playerResults[i] = newDice[i].rollD20(modifier[i]);
+        }
+        else
+        {
+            std::cout << Dice.toStdString() << " is an invalid Request" << std::endl;
+        }
+
+        // Print result
+        std::cout << "Rolled a: " << playerResults[i] << std::endl;
+
+        playerResults_Str[i].setNum(playerResults[i]);
+    }
+
+    // Check if each player has passed the diff check
+    for(int i = 0; i < numberOfPlayers; i++)
+    {
+        if(playerResults[i] > diff)
+        {
+            message_Passed.append(playerNames[i]);
+            message_Passed.append(": ");
+            message_Passed.append(playerResults_Str[i]);
+            message_Passed.append(">");
+        }
+        else
+        {
+            message_Failed.append(playerNames[i]);
+            message_Failed.append(": ");
+            message_Failed.append(playerResults_Str[i]);
+            message_Failed.append(">");
+        }
+    }
+
+    std::cout << "[Debug] send: " << message_Passed.toStdString().c_str() << std::endl;
+    std::cout << "[Debug] send: " << message_Failed.toStdString().c_str() << std::endl;
+
+    push.send(message_Passed.toStdString().c_str(), message_Passed.length());
+    push.send(message_Failed.toStdString().c_str(), message_Failed.length());
 }
 
 ServiceSemKirkels::RunService::~RunService()

@@ -41,6 +41,7 @@ namespace ClientSemKirkels
             void handleRecvExistingPlayer(void);    // Receives the reply to the question: "Does this player exist?"
             void checkExistingPlayer(void);         // Sends a request to find out if the player exists
             void clearTopic(void);                  // Clears the push topic and resets it to default
+            void removePlayer();
 
             QString subTopic    = "Service>DICE!>"; // Client receives answer
             QString pushTopic   = "Service>DICE?>"; // Client asks question
